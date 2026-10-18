@@ -21,7 +21,7 @@ export function openVideo(v, app) {
   if (v.youtubeId) actions.push(Object.assign(document.createElement('a'), { className: 'btn btn--sm', href: `https://www.youtube.com/watch?v=${v.youtubeId}`, target: '_blank', rel: 'noopener', textContent: 'YouTube\'da aç ↗' }));
   else if (yt) actions.push(Object.assign(document.createElement('a'), { className: 'btn btn--sm', href: yt, target: '_blank', rel: 'noopener', textContent: 'Kanala git ↗' }));
   const labDef = v.lab ? labs.find(l => l.id === v.lab && l.status === 'ready') : null;
-  if (labDef) { const a = document.createElement('a'); a.className = 'btn btn--sm btn--primary'; a.href = `#/lab/${labDef.id}`; a.textContent = 'Deneyi oyna →'; a.title = labDef.title; actions.push(a) }
+  if (labDef) { const a = document.createElement('a'); a.className = 'btn btn--sm btn--primary'; a.href = labDef.href; a.textContent = 'Deneyi oyna →'; a.title = labDef.title; actions.push(a) }
   openModal({
     title: `#${pad(v.n)} · ${v.title}`, kind: 'video', className: 'modal--video', actions,
     body(el) {

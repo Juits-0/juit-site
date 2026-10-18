@@ -19,7 +19,7 @@ function cabinet(g, i) {
 }
 const labCab = `<a class="cabinet cabinet--lab" href="#/lab" style="--tint:#B67CFF" aria-label="Deney kabini — mekanik deneyleri">
     <span class="cabinet__marquee"><span>JUIT LAB</span></span>
-    <span class="cabinet__screen"><span class="cabinet__labscreen"><b>3</b><small>DENEY</small><em>coyote · görüş · telegraph</em></span><i class="cab__scan"></i><span class="cabinet__insert">OYNA</span></span>
+    <span class="cabinet__screen"><span class="cabinet__labscreen"><b>${labs.length}</b><small>DENEY</small><em>${labs.slice(0, 3).map(l => l.title.toLowerCase()).join(' · ')} …</em></span><i class="cab__scan"></i><span class="cabinet__insert">OYNA</span></span>
     <span class="cabinet__deck"><i class="cab__stick"></i><i class="cab__btn"></i><i class="cab__btn"></i></span>
     <span class="cabinet__base"><span class="cabinet__meta mono">site içi · ücretsiz</span></span>
   </a>`;

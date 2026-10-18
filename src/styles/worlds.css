@@ -78,6 +78,14 @@
 .lab-section .lab { scroll-margin-top: 90px; }
 /* Mobu'nun tüneği: deney sahnesinin sağ üst köşesi boş bırakılır (başlık düğmeleri sola kayar) */
 .lab-section .section__head, .lab-section > .lede { padding-right: clamp(84px, 12vw, 130px); }
+/* Laboratuvar kartları (#/lab): her kart lab.html#/deney/<id> derin bağlantısına gider */
+.lab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
+.lab-card { display: grid; gap: 8px; padding: 18px; align-content: start; transition: border-color .25s, transform .25s var(--ease-out); }
+.lab-card:hover, .lab-card:focus-within { border-color: var(--purple); transform: translateY(-2px); }
+.lab-card__title { font: 800 20px/1.15 var(--font-display); letter-spacing: -.01em; margin: 0; }
+.lab-card__q, .lab-card__goal { font-size: 14px; line-height: 1.45; margin: 0; }
+.lab-card__goal { color: var(--text-2); }
+.lab-card__row { margin-top: 6px; }
 
 /* ---------- HAKKIMDA ---------- */
 .desk-wrap { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .8fr); gap: 24px; align-items: start; }

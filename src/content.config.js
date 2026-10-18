@@ -9,6 +9,8 @@
 // Site bir alt klasörde yayınlanır (GitHub Pages: /juit-site/). public/ altındaki
 // yerel dosyaların yolunu bu yardımcıyla yaz; geliştirmede ve yayında doğru
 // ön ek otomatik eklenir. Boş değer boş kalır (düğme/kapak gizlenir).
+import { EXPERIMENTS } from './config/experiments.js';   // laboratuvar deney listesi (id, no, başlık)
+
 const RAW_BASE = import.meta.env.BASE_URL;                      // geliştirmede ve yayında '/juit-site/'
 const BASE = RAW_BASE.endsWith('/') ? RAW_BASE.slice(0, -1) : RAW_BASE;
 export const asset = p => (p ? BASE + (p.startsWith('/') ? p : '/' + p) : p);
@@ -48,16 +50,16 @@ export const contact = {
 //  poster/loop: sitedeki yerel önizleme dosyaları (public/videos/...)
 //  face: o videoda Mobu'nun kartta takındığı ifade
 //        (calm|happy|star|o|O|scared|T|proud|x|angry|sus|sad|closed|flat)
-//  lab: bu videoya bağlı site içi deney kimliği (labs listesine bakar)
+//  lab: videoyla aynı numaralı laboratuvar deneyi; labs listesinden otomatik bağlanır
 // ---------------------------------------------------------------------
 export const videos = [
   { n: 1,  slug: 'dusmanlar-sirayla',     title: 'Oyunlardaki düşmanlar neden sırayla saldırıyor?',            youtubeId: '', face: 'scared', topic: 'Saldırı yöneticisi' },
-  { n: 2,  slug: 'dusmanlar-nasil-gorur', title: 'Oyunlardaki düşmanlar seni nasıl görüyor?',                  youtubeId: '', face: 'sus',    topic: 'Görüş konisi', lab: 'vision' },
-  { n: 3,  slug: 'hatali-ziplamalar',     title: 'Oyunlar neden hatalı zıplamalarını affediyor?',              youtubeId: '', face: 'o',      topic: 'Coyote time', lab: 'coyote' },
+  { n: 2,  slug: 'dusmanlar-nasil-gorur', title: 'Oyunlardaki düşmanlar seni nasıl görüyor?',                  youtubeId: '', face: 'sus',    topic: 'Görüş konisi' },
+  { n: 3,  slug: 'hatali-ziplamalar',     title: 'Oyunlar neden hatalı zıplamalarını affediyor?',              youtubeId: '', face: 'o',      topic: 'Coyote time' },
   { n: 4,  slug: 'yonlendirme',           title: 'Oyunlar seni fark ettirmeden nasıl yönlendiriyor?',          youtubeId: '', face: 'calm',   topic: 'Çevresel yönlendirme' },
   { n: 5,  slug: 'chunk',                 title: 'Sonsuz oyun dünyaları bilgisayarını neden patlatmıyor?',     youtubeId: '', face: 'O',      topic: 'Chunk yükleme' },
   { n: 6,  slug: 'odul',                  title: 'Oyunlarda ödül toplamak neden bu kadar tatmin edici?',       youtubeId: '', face: 'star',   topic: 'Geri bildirim' },
-  { n: 7,  slug: 'boss-telegraph',        title: 'Bosslar neden saldırmadan önce haber veriyor?',              youtubeId: '', face: 'x',      topic: 'Telegraphing', lab: 'telegraph' },
+  { n: 7,  slug: 'boss-telegraph',        title: 'Bosslar neden saldırmadan önce haber veriyor?',              youtubeId: '', face: 'x',      topic: 'Telegraphing' },
   { n: 8,  slug: 'zaman-yavaslatma',      title: 'Oyunlarda zamanı nasıl yavaşlatıyorlar?',                    youtubeId: '', face: 'proud',  topic: 'Hit stop & slow-mo' },
   { n: 9,  slug: 'hitbox',                title: 'Oyunlarda ıskaladığın hâlde nasıl vuruyorsun?',              youtubeId: '', face: 'happy',  topic: 'Hitbox' },
   { n: 10, slug: 'iframes',               title: 'Oyunlarda vurulunca neden ölümsüz oluyorsun?',               youtubeId: '', face: 'angry',  topic: 'i-frames' },
@@ -68,17 +70,22 @@ export const videos = [
   poster: asset(`/videos/posters/${String(v.n).padStart(2, '0')}.jpg`),
   loop:   asset(`/videos/loops/${String(v.n).padStart(2, '0')}.mp4`),
   placeholder: !v.youtubeId,   // youtubeId gelince rozet otomatik kalkar
+  lab: EXPERIMENTS.find(e => e.no === v.n)?.id ?? null,   // aynı numaralı deney (lab.html#/deney/<id>)
 }));
 
 // ---------------------------------------------------------------------
-//  DENEYLER — site içinde çalışan mini oyunlar / mekanik deneyleri
+//  DENEYLER — Mobu'nun Oyun Laboratuvarı (lab.html, aynı yayının ikinci sayfası)
+//  Liste src/config/experiments.js'ten türetilir; her deney videoyla aynı
+//  numarayı taşır. href: lab.html#/deney/<id> derin bağlantısı.
 //  status: 'ready' → oynanabilir, 'soon' → listede görünür ama kilitli
 // ---------------------------------------------------------------------
-export const labs = [
-  { id: 'coyote',    title: 'Coyote Time', blurb: 'Platformdan ayrıldıktan sonra zıplama hakkı. Anahtarı kapat, farkı hisset.', status: 'ready', videoN: 3 },
-  { id: 'vision',    title: 'Düşman Görüşü', blurb: 'Görüş konisine girme, kör noktayı bul. Koniyi gizleyince ne kadar adaletsiz hissettiğine bak.', status: 'ready', videoN: 2 },
-  { id: 'telegraph', title: 'Telegraphing', blurb: 'Boss uyarısı açıkken ve kapalıyken kaç. Uyarı yoksa vuruş haber vermez.', status: 'ready', videoN: 7 },
-];
+export const labHome = asset('/lab.html');
+export const labs = EXPERIMENTS.map(e => ({
+  id: e.id, no: e.no, videoN: e.no,
+  title: e.short, question: e.title, blurb: e.goal, lesson: e.lesson,
+  status: 'ready',
+  href: `${labHome}#/deney/${e.id}`,
+}));
 
 // ---------------------------------------------------------------------
 //  OYUN DÜNYASI — atari salonu
