@@ -6,13 +6,20 @@
 //  arayüzde otomatik gizlenir, çalışmayan düğme oluşmaz.
 // =====================================================================
 
+// Site bir alt klasörde yayınlanır (GitHub Pages: /juit-site/). public/ altındaki
+// yerel dosyaların yolunu bu yardımcıyla yaz; geliştirmede ve yayında doğru
+// ön ek otomatik eklenir. Boş değer boş kalır (düğme/kapak gizlenir).
+const RAW_BASE = import.meta.env.BASE_URL;                      // geliştirmede ve yayında '/juit-site/'
+const BASE = RAW_BASE.endsWith('/') ? RAW_BASE.slice(0, -1) : RAW_BASE;
+export const asset = p => (p ? BASE + (p.startsWith('/') ? p : '/' + p) : p);
+
 export const site = {
   name: 'JUIT',
   tagline: 'Oyunların arkasını kurcalıyor, öğrendiklerimi Mobu ile anlatıyor ve kendi oyun fikirlerimi deniyorum.',
   // Sekme başlığı ve paylaşım açıklaması
   title: 'JUIT — Mobu & oyun laboratuvarı',
   description: 'Oyunların arkasındaki mekanikler, Mobu ile anlatılan videolar ve oynanabilir deneyler.',
-  logo: '/logo/jt_logo.png',
+  logo: asset('/logo/jt_logo.png'),
 };
 
 // ---------------------------------------------------------------------
@@ -58,8 +65,8 @@ export const videos = [
   { n: 12, slug: 'ayna',                  title: 'Oyunlardaki aynalar neden bazen çalışmıyor?',                youtubeId: '', face: 'sad',    topic: 'Yansıma' },
 ].map(v => ({
   ...v,
-  poster: `/videos/posters/${String(v.n).padStart(2, '0')}.jpg`,
-  loop:   `/videos/loops/${String(v.n).padStart(2, '0')}.mp4`,
+  poster: asset(`/videos/posters/${String(v.n).padStart(2, '0')}.jpg`),
+  loop:   asset(`/videos/loops/${String(v.n).padStart(2, '0')}.mp4`),
   placeholder: !v.youtubeId,   // youtubeId gelince rozet otomatik kalkar
 }));
 
@@ -126,7 +133,7 @@ export const games = [
     platform: 'Windows (indirilebilir)', role: 'Ekip', tags: ['Role Playing', 'Jam'],
     year: '2025', tint: '#FFE066', cover: '/games/egg-or-jam.png',
   },
-];
+].map(g => ({ ...g, cover: asset(g.cover) }));   // kapak yolları yayın adresine göre düzeltilir
 
 // ---------------------------------------------------------------------
 //  HAKKIMDA — masadaki nesneler. Her nesne bir üretim alanını açar.
