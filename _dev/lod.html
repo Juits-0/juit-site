@@ -1,0 +1,42 @@
+<!doctype html><html><body style="margin:0;background:#0A0A0A">
+<div id="c" style="position:relative;width:100vw;height:100vh;overflow:hidden"></div>
+<script type="module">
+import Lod from '/src/experiments/lod.js';
+const c = document.getElementById('c');
+const input = { axis: { x: 0, y: 0 }, pointer: { cx: 0, cy: 0, down: false, pressed: false, released: false, dx: 0, dy: 0, wheel: 0, pinch: 1, inside: true } };
+const keys = {};
+addEventListener('keydown', (e) => (keys[e.key.toLowerCase()] = 1));
+addEventListener('keyup', (e) => (keys[e.key.toLowerCase()] = 0));
+let acc = { dx: 0, dy: 0, wheel: 0 };
+c.addEventListener('pointerdown', () => (input.pointer.down = true));
+addEventListener('pointerup', () => (input.pointer.down = false));
+addEventListener('pointermove', (e) => { acc.dx += e.movementX; acc.dy += e.movementY; });
+c.addEventListener('wheel', (e) => { acc.wheel += e.deltaY; e.preventDefault(); }, { passive: false });
+const audio = { play: (n) => console.log('audio', n) };
+const hudL = document.createElement('pre');
+hudL.style.cssText = 'position:absolute;left:8px;top:8px;color:#F5F5F5;font:12px monospace;margin:0;pointer-events:none';
+const hudR = document.createElement('pre');
+hudR.style.cssText = 'position:absolute;right:8px;top:8px;color:#B67CFF;font:12px monospace;margin:0;text-align:right;pointer-events:none';
+const s = {};
+for (const d of Lod.settings) s[d.key] = d.default;
+const q = new URLSearchParams(location.search);
+const e = new Lod({ container: c, s, tech: q.get('tech') !== '0', input, audio, reduced: false, cfg: { lesson: 'Uzaktaki nesneler daha az üçgenle çizilir.' } });
+e.hud = (h) => { hudL.textContent = h.left.join('\n'); hudR.textContent = h.right.join('\n'); window.__hud = h; };
+e.toast = (t) => console.log('toast', t);
+e.complete = (r) => { console.log('COMPLETE', JSON.stringify(r)); window.__complete = r; };
+e.init();
+c.appendChild(hudL); c.appendChild(hudR);
+window.__e = e; window.__input = input;
+if (q.get('color') === '1') e.onSetting('colorize', true);
+addEventListener('resize', () => e.resize());
+let last = performance.now();
+(function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = (now - last) / 1000; last = now;
+  input.axis.x = (keys.d ? 1 : 0) - (keys.a ? 1 : 0);
+  input.axis.y = (keys.s ? 1 : 0) - (keys.w ? 1 : 0);
+  Object.assign(input.pointer, acc); acc = { dx: 0, dy: 0, wheel: 0 };
+  e.update(dt);
+  input.pointer.dx = input.pointer.dy = input.pointer.wheel = 0;
+})(performance.now());
+</script></body></html>

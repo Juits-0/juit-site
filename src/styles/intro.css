@@ -1,0 +1,11 @@
+/* ---------- açılış ---------- */
+.intro { position: fixed; inset: 0; z-index: 2000; background: #050505; display: grid; place-items: center; transition: opacity .6s ease; }
+.intro.is-done { opacity: 0; pointer-events: none; }
+.intro__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.intro__skip { position: absolute; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); background: rgba(23,23,23,.6); border: 1px solid var(--line-strong); color: var(--text-2); padding: 8px 12px; border-radius: 999px; font: 600 12px/1 var(--font-body); cursor: pointer; opacity: 0; animation: intro-skip-in .4s .6s ease both; display: inline-flex; gap: 8px; align-items: center; }
+.intro__skip kbd { font: 700 10px/1 var(--font-mono); background: var(--bg3); padding: 3px 5px; border-radius: 4px; color: var(--muted); }
+.intro__skip:hover { color: var(--text); border-color: var(--purple); }
+@keyframes intro-skip-in { to { opacity: 1; } }
+/* JS hiç çalışmazsa / takılırsa perde kendini 6 sn sonra kaldırır */
+.intro:not(.is-live) { animation: intro-failsafe .5s 6s ease both; }
+@keyframes intro-failsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }

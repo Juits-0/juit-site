@@ -1,0 +1,11 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const b = await chromium.launch({ channel: 'chrome', args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const p = await b.newPage({ viewport: { width: 1280, height: 720 } });
+const logs = []; p.on('console', m => { if (m.type()==='error') logs.push(m.text()); }); p.on('pageerror', e => logs.push(e.message));
+await p.goto('http://localhost:5190/lab.html#/deney/lod'); await p.waitForTimeout(2500);
+await p.mouse.click(582,579); console.log('tech', await p.evaluate(()=>window.__exp.tech)); await p.waitForTimeout(800);
+console.log(await p.evaluate(() => document.body.innerText.match(/Çizilen[\s\S]{0,200}/)[0]));
+await p.getByText('Yeniden başlat').click(); await p.waitForTimeout(500);
+console.log('errors', logs.join('|') || 'none'); await b.close();

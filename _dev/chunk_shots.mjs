@@ -1,0 +1,16 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const OUT = 'C:/Claude/juit-site/_dev/shots/';
+const b = await chromium.launch({ channel: 'chrome' });
+const p = await (await b.newContext({ viewport: { width: 1280, height: 720 } })).newPage();
+const logs = []; p.on('console', m => { if (m.type() === 'error') logs.push(m.text()); }); p.on('pageerror', e => logs.push(e.message));
+await p.goto('http://localhost:5184/lab.html#/deney/chunk'); await p.waitForTimeout(5500);
+await p.evaluate(() => { const e = window.__exp; e.setSetting('radius', 1); });
+await p.keyboard.down('ArrowRight'); await p.waitForTimeout(450);
+await p.screenshot({ path: OUT + 'chunk_desktop_r1.png' });
+await p.keyboard.up('ArrowRight');
+await p.evaluate(() => { const e = window.__exp; e.setSetting('radius', 2); e.tech = true; e.onTech(true); });
+await p.keyboard.down('ArrowDown'); await p.waitForTimeout(1100);
+await p.screenshot({ path: OUT + 'chunk_tech.png' });
+console.log(logs.join('\n') || 'ok'); await b.close();

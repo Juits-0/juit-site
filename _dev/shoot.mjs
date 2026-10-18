@@ -1,0 +1,24 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const b = await chromium.launch({ channel: 'chrome', args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const p = await b.newPage({ viewport: { width: 1280, height: 720 } });
+const logs = [];
+p.on('console', (m) => logs.push(m.type() + ': ' + m.text()));
+p.on('pageerror', (e) => logs.push('PAGEERROR: ' + e.message));
+await p.goto('http://localhost:5181/_dev/lod.html?color=1');
+await p.waitForTimeout(2500);
+await p.screenshot({ path: 'C:/Claude/juit-site/_dev/shots/lod.png' });
+const info = await p.evaluate(() => window.__e.objs.map((o) => ({ n: o.sp.name, lv: o.cur + 1, tris: o.levels.map((l) => l.tris), d: +o.dist.toFixed(1) })));
+console.log(JSON.stringify(info));
+console.log(await p.evaluate(() => JSON.stringify(window.__hud)));
+// quest: zoom in then out via dist/target
+await p.evaluate(() => { const e = window.__e; e.dist = 3; });
+await p.waitForTimeout(1500);
+await p.evaluate(() => { const e = window.__e; e.dist = 40; });
+await p.waitForTimeout(1500);
+await p.evaluate(() => { const e = window.__e; e.dist = 3; });
+await p.waitForTimeout(1500);
+console.log('complete:', await p.evaluate(() => JSON.stringify(window.__complete || null)));
+console.log(logs.join('\n'));
+await b.close();

@@ -1,0 +1,15 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const b = await chromium.launch({ channel: 'chrome' });
+const p = await (await b.newContext({ viewport: { width: 1280, height: 720 } })).newPage();
+const logs = []; p.on('console', m => { if (m.type() === 'error') logs.push(m.text()); }); p.on('pageerror', e => logs.push('PE ' + e.message));
+await p.goto('http://localhost:5180/lab.html#/deney/coyote'); await p.waitForTimeout(1200);
+await p.click('.sw[aria-label="Teknik görünüm"]');
+await p.evaluate(() => { const e = window.__exp, inp = e.input; const pl = e.plats[1]; e.x = pl.x1 - 30; e.y = pl.top; e.vx = 260; inp.codes.add('ArrowRight'); e.camera.x = e.x + 70;
+  const step = () => { e.time += 1 / 120; e.frame++; e.update(1 / 120); inp.endFrame(); }; for (let i = 0; i < 24; i++) step(); });
+await p.waitForTimeout(60);
+await p.screenshot({ path: 'C:/Claude/juit-site/_dev/shots/coyote_tech_bar.png', clip: { x: 150, y: 60, width: 980, height: 490 } });
+await p.evaluate(() => { const e = window.__exp; e.input.codes.clear(); e.vx = 0; });
+console.log(logs.join('\n') || 'ok');
+await b.close();

@@ -1,0 +1,29 @@
+/* ---------- LAB (deney modülleri) ortak stil ---------- */
+.lab { display: grid; gap: 14px; }
+.lab-stage { position: relative; width: 100%; aspect-ratio: 16 / 9; background: var(--bg1); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px rgba(139,61,255,.08), 0 30px 60px -30px rgba(139,61,255,.35); }
+.lab-stage canvas { display: block; width: 100%; height: 100%; outline: none; touch-action: none; }
+.lab-stage canvas:focus-visible { box-shadow: inset 0 0 0 2px var(--purple); }
+.lab-panel { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 12px 14px; background: var(--bg2); border: 1px solid var(--line); border-radius: 12px; }
+.lab-panel__title { font: 900 12px/1 var(--font-display); letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-right: 6px; }
+.lab-switch { display: inline-flex; align-items: center; gap: 10px; background: transparent; border: 0; color: var(--text); font: 700 13px/1 var(--font-mono); letter-spacing: .04em; cursor: pointer; padding: 6px 4px; border-radius: 8px; }
+.lab-switch:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+.lab-switch::before { content: ''; width: 38px; height: 22px; border-radius: 999px; background: var(--bg3); border: 2px solid #3a3a3a; position: relative; transition: background .2s, border-color .2s; box-shadow: inset 0 0 0 0 transparent; }
+.lab-switch::after { content: ''; position: absolute; width: 14px; height: 14px; border-radius: 50%; background: #9a9a9a; transform: translateX(6px); transition: transform .2s, background .2s; }
+.lab-switch { position: relative; }
+.lab-switch[aria-checked="true"]::before { background: rgba(139,61,255,.35); border-color: var(--purple); }
+.lab-switch[aria-checked="true"]::after { transform: translateX(22px); background: var(--glow); box-shadow: 0 0 10px var(--glow); }
+.lab-stat { font: 700 13px/1 var(--font-mono); color: var(--muted); display: inline-flex; gap: 8px; align-items: baseline; }
+.lab-stat b { color: var(--text); font-size: 16px; }
+.lab-stat.is-good b { color: var(--glow); }
+.lab-stat.is-bad b { color: var(--red); }
+.lab-btn { margin-left: auto; background: transparent; color: var(--text); border: 1px solid var(--line-strong); border-radius: 999px; padding: 8px 14px; font: 700 12px/1 var(--font-mono); letter-spacing: .08em; cursor: pointer; }
+.lab-btn:hover { border-color: var(--purple); color: var(--glow); }
+.lab-btn:focus-visible { outline: 2px solid var(--purple); outline-offset: 2px; }
+.lab-hint { margin: 0; font: 500 12px/1.4 var(--font-mono); color: var(--muted); }
+.lab-touch { display: none; gap: 10px; justify-content: space-between; }
+.lab-touch__group { display: flex; gap: 10px; }
+.lab-key { width: 64px; height: 56px; border-radius: 14px; border: 1px solid var(--line-strong); background: var(--bg2); color: var(--text); font: 900 18px/1 var(--font-display); touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; }
+.lab-key[data-key="jump"], .lab-key[data-key="action"] { width: 96px; background: rgba(139,61,255,.18); border-color: var(--purple); color: var(--glow); }
+.lab-key.is-down { background: var(--purple); color: #fff; }
+@media (pointer: coarse) { .lab-touch { display: flex; } .lab-hint--kb { display: none; } }
+@media (hover: hover) and (pointer: fine) { .lab-hint--touch { display: none; } }

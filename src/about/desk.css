@@ -1,0 +1,95 @@
+/* JUIT — About: night-time creator's desk (see desk.js) */
+
+.desk-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* decorative layers never intercept the pointer */
+.desk-bg {
+  pointer-events: none;
+}
+
+.desk-obj {
+  cursor: pointer;
+  transition: transform .35s cubic-bezier(.2, .8, .2, 1), filter .35s;
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.desk-hit {
+  fill: transparent;
+  stroke: none;
+}
+
+.desk-obj:hover,
+.desk-obj:focus-visible {
+  transform: translateY(-6px);
+  filter: drop-shadow(0 0 14px rgba(182, 124, 255, .65));
+}
+
+.desk-obj:focus-visible {
+  outline: none;
+}
+
+/* the outline replaces the browser focus ring for keyboard users */
+.desk-obj:focus-visible .desk-hit {
+  stroke: #B67CFF;
+  stroke-width: 2;
+  stroke-dasharray: 2 6;
+  rx: 12;
+}
+
+.desk-obj.is-active {
+  transform: translateY(-6px);
+  filter: drop-shadow(0 0 20px rgba(182, 124, 255, .85)) drop-shadow(0 0 4px rgba(139, 61, 255, .9));
+}
+
+.desk-obj.is-active .desk-hit {
+  stroke: #8B3DFF;
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  rx: 12;
+}
+
+/* idle life */
+@media (prefers-reduced-motion: no-preference) {
+  .desk-led {
+    animation: desk-led-blink 2.4s ease-in-out infinite;
+  }
+
+  .desk-screen {
+    animation: desk-screen-flicker 7s linear infinite;
+  }
+
+  .desk-light {
+    animation: desk-light-breathe 6s ease-in-out infinite;
+  }
+
+  @keyframes desk-led-blink {
+    0%, 45% { opacity: 1; }
+    55%, 95% { opacity: .12; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes desk-screen-flicker {
+    0%, 90%, 100% { opacity: 1; }
+    91.5% { opacity: .84; }
+    93% { opacity: 1; }
+    95% { opacity: .92; }
+    96.5% { opacity: 1; }
+  }
+
+  @keyframes desk-light-breathe {
+    0%, 100% { opacity: .84; }
+    50% { opacity: 1; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .desk-obj {
+    transition: filter .2s;
+  }
+}

@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><title>ayna harness</title>
+<style>html,body{margin:0;height:100%;background:#0A0A0A;color:#F5F5F5;font:12px monospace}
+#stage{position:absolute;inset:0;overflow:hidden}
+#hud{position:absolute;left:10px;top:8px;white-space:pre;pointer-events:none;text-shadow:0 0 4px #000;z-index:5}
+#hudr{position:absolute;right:10px;top:8px;white-space:pre;text-align:right;pointer-events:none;text-shadow:0 0 4px #000;z-index:5}
+#goal{position:absolute;left:50%;transform:translateX(-50%);bottom:8px;color:#B67CFF;z-index:5;background:rgba(10,10,10,.7);padding:3px 8px}
+#log{position:absolute;right:10px;bottom:30px;text-align:right;color:#F5C542;z-index:5;max-width:40%}
+</style></head><body>
+<div id="stage"></div><div id="hud"></div><div id="hudr"></div><div id="goal"></div><div id="log"></div>
+<script type="module" src="/_dev/ayna_harness.js"></script></body></html>

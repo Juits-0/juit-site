@@ -1,0 +1,101 @@
+/* ---------- HUB: iki dünya ---------- */
+.hub { position: relative; min-height: 100dvh; display: grid; grid-template-rows: 1fr auto; background: var(--bg0); }
+.hub__worlds { display: flex; min-height: calc(100dvh - 112px); isolation: isolate; }
+.world { position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; display: flex; align-items: flex-end; text-decoration: none; color: var(--text); outline-offset: -4px; transition: filter .6s ease; }
+.world:hover { text-decoration: none; }
+.world.is-far { filter: brightness(.72) saturate(.85); }
+.world.is-near { filter: brightness(1.06); }
+.world__layer { position: absolute; inset: -4% ; pointer-events: none; will-change: transform; }
+.world__layer--mid { inset: 0; }
+.world__spot { position: absolute; left: 50%; top: -10%; width: 90%; height: 80%; transform: translateX(-50%); background: radial-gradient(50% 60% at 50% 20%, rgba(139,61,255,.22), rgba(139,61,255,.06) 50%, transparent 72%); opacity: .8; transition: opacity .6s; }
+.world.is-near .world__spot { opacity: 1.2; }
+.world__spot--arcade { background: radial-gradient(50% 60% at 50% 20%, rgba(139,61,255,.16), rgba(92,225,255,.05) 50%, transparent 72%); }
+.world__floor { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; background: linear-gradient(to top, #0d0a14, rgba(13,10,20,.6) 50%, transparent); }
+.world__floor::after { content: ''; position: absolute; left: 0; right: 0; top: 36%; height: 1px; background: linear-gradient(90deg, transparent, rgba(182,124,255,.35), transparent); }
+.world__neon { position: absolute; left: 10%; right: 10%; top: 14%; height: 2px; background: linear-gradient(90deg, transparent, var(--purple), transparent); box-shadow: 0 0 18px 2px rgba(139,61,255,.5); opacity: .5; }
+.world__text { position: relative; z-index: 2; padding: 0 var(--gutter) clamp(28px, 6vh, 64px); display: grid; gap: 12px; max-width: 520px; transition: transform .5s var(--ease-out); }
+.world__text--right { margin-left: auto; text-align: right; justify-items: end; }
+.world.is-near .world__text { transform: translateY(-6px); }
+.world__text .btn { justify-self: start; margin-top: 6px; transition: transform .25s var(--ease-out), box-shadow .25s; }
+.world__text--right .btn { justify-self: end; }
+.world.is-near .world__text .btn, .world:focus-visible .world__text .btn { box-shadow: 0 0 0 1px rgba(182,124,255,.5), 0 0 34px -4px rgba(139,61,255,.9); transform: translateY(-2px); }
+.world__text h2 { text-shadow: 0 6px 30px rgba(0,0,0,.6); }
+
+/* --- sol: tüplü TV --- */
+.tv { position: absolute; left: 50%; bottom: 29%; width: clamp(150px, 15vw, 210px); transform: translateX(-50%); filter: drop-shadow(0 30px 40px rgba(0,0,0,.6)); }
+.tv__bezel { position: relative; background: linear-gradient(160deg, #262330, #141219); border: 2px solid #0a0a0a; border-radius: 16px; padding: 12px 42px 12px 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 0 0 1px rgba(255,255,255,.04); }
+.tv__screen { position: relative; aspect-ratio: 9 / 13; border-radius: 10px; overflow: hidden; background: #050505; box-shadow: inset 0 0 0 2px #0a0a0a, inset 0 0 30px rgba(0,0,0,.9); }
+.tv__video { width: 100%; height: 100%; object-fit: cover; filter: saturate(1.05) contrast(1.05); transform: scale(1.03); }
+.tv__scan { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgba(0,0,0,.18) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; pointer-events: none; }
+.tv__glass { position: absolute; inset: 0; background: radial-gradient(120% 90% at 30% 10%, rgba(255,255,255,.12), transparent 50%); pointer-events: none; }
+.tv__side { position: absolute; right: 10px; top: 14px; bottom: 14px; width: 22px; display: grid; align-content: start; justify-items: center; gap: 10px; }
+.tv__knob { width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #4a4656, #1a1820); box-shadow: 0 1px 0 rgba(255,255,255,.08); }
+.tv__knob::after { content: ''; display: block; width: 2px; height: 6px; background: #8c8c8c; margin: 2px auto 0; border-radius: 2px; }
+.tv__led { width: 6px; height: 6px; border-radius: 50%; background: var(--red); box-shadow: 0 0 8px var(--red); margin-top: auto; animation: led 2.4s steps(1) infinite; }
+@keyframes led { 0%, 92% { opacity: 1 } 93%, 100% { opacity: .2 } }
+.tv__feet { display: flex; justify-content: space-between; padding: 0 22px; }
+.tv__feet i { width: 18px; height: 10px; background: #0f0e14; border-radius: 0 0 6px 6px; }
+.world.is-near .tv__video { filter: saturate(1.2) contrast(1.08) brightness(1.08); }
+
+/* --- sağ: atari kabinleri --- */
+.cabs { position: absolute; left: 50%; bottom: 28%; display: flex; align-items: flex-end; gap: clamp(10px, 1.5vw, 22px); transform: translateX(-50%); perspective: 900px; }
+.cab { --tint: var(--purple); position: relative; width: clamp(72px, 7vw, 100px); display: grid; gap: 0; filter: drop-shadow(0 24px 30px rgba(0,0,0,.65)); transition: transform .5s var(--ease-out); }
+.cab--0 { transform: rotateY(14deg) translateY(10px) scale(.92); }
+.cab--2 { transform: rotateY(-14deg) translateY(10px) scale(.92); }
+.cab--1 { z-index: 1; }
+.world.is-near .cab--1 { transform: translateY(-6px); }
+.cab__marquee { height: 24px; display: grid; place-items: center; background: linear-gradient(#2a2733, #16141c); border: 2px solid #0a0a0a; border-bottom: 0; border-radius: 6px 6px 0 0; overflow: hidden; }
+.cab__marquee span { font: 900 8px/1 var(--font-display); letter-spacing: .06em; color: var(--tint); text-shadow: 0 0 8px var(--tint); white-space: nowrap; padding: 0 4px; opacity: .85; }
+.cab__screen { position: relative; aspect-ratio: 4 / 3.4; background: #050505; border: 2px solid #0a0a0a; border-top: 6px solid #16141c; border-bottom: 6px solid #16141c; overflow: hidden; }
+.cab__screen img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.85) saturate(1.1); transition: filter .4s; }
+.cab__scan { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgba(0,0,0,.22) 0 1px, transparent 1px 3px), radial-gradient(80% 60% at 50% 40%, transparent 50%, rgba(0,0,0,.45)); pointer-events: none; }
+.cab__noart { width: 100%; height: 100%; display: grid; place-items: center; background: radial-gradient(60% 60% at 50% 40%, color-mix(in srgb, var(--tint) 35%, #0a0a0a), #050505); }
+.cab__noart span { font: 900 9px/1.1 var(--font-display); color: var(--tint); text-shadow: 0 0 10px var(--tint); text-align: center; padding: 4px; }
+.cab__deck { height: 22px; background: linear-gradient(#2a2733, #1a1821); border: 2px solid #0a0a0a; border-top: 0; display: flex; align-items: center; justify-content: center; gap: 5px; transform: skewX(0); }
+.cab__stick { width: 6px; height: 12px; background: #8c8c8c; border-radius: 3px; position: relative; margin-right: 4px; }
+.cab__stick::after { content: ''; position: absolute; top: -5px; left: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--red); box-shadow: 0 0 6px var(--red); }
+.cab__btn { width: 8px; height: 8px; border-radius: 50%; background: var(--tint); box-shadow: 0 0 6px var(--tint); }
+.cab__base { height: 34px; background: linear-gradient(#1a1821, #0e0d12); border: 2px solid #0a0a0a; border-top: 0; border-radius: 0 0 4px 4px; }
+.cab::after { content: ''; position: absolute; inset: 20% -30% -5% -30%; background: radial-gradient(50% 50% at 50% 60%, color-mix(in srgb, var(--tint) 30%, transparent), transparent 70%); z-index: -1; opacity: .5; transition: opacity .5s; }
+.world.is-near .cab::after { opacity: 1; }
+.world.is-near .cab__screen img { filter: brightness(1.05) saturate(1.2); }
+
+/* --- orta logo --- */
+.hub__logo { position: absolute; left: 50%; top: calc(50% - 60px); z-index: 5; width: min(42vw, 230px); aspect-ratio: 1; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(5,5,5,.92) 38%, rgba(5,5,5,.5) 56%, transparent 70%); border: 0; padding: 0; display: grid; place-items: center; cursor: pointer; border-radius: 50%; }
+.hub__logo:focus-visible { outline: 2px solid var(--purple); outline-offset: -8px; }
+.hub__logo-svg { width: 76%; height: auto; aspect-ratio: 1; filter: drop-shadow(0 0 24px rgba(139,61,255,.35)); transition: transform .35s var(--ease-back); }
+.hub__logo:hover .hub__logo-svg { transform: scale(1.04); }
+.hub__logo.is-bump .hub__logo-svg { animation: logo-bump .5s var(--ease-back); }
+@keyframes logo-bump { 30% { transform: scale(.92) rotate(-2deg); } 70% { transform: scale(1.06) rotate(1deg); } 100% { transform: none; } }
+body:not(.is-revealed) .hub__logo-svg { opacity: 0; }
+body.is-revealed .hub__logo-svg { opacity: 1; transition: opacity .6s .3s; }
+
+/* --- alt şerit --- */
+.hub__bottom { position: relative; z-index: 3; min-height: 112px; display: flex; align-items: center; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap; padding: 18px var(--gutter) 22px; border-top: 1px solid var(--line); background: var(--bg0); }
+.hub__tag { color: var(--text-2); font-size: 14px; max-width: 54ch; text-wrap: pretty; }
+.hub__links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.hub__links .chip { cursor: pointer; transition: border-color .2s, color .2s; }
+.hub__links .chip:hover { border-color: var(--purple); color: var(--glow); text-decoration: none; }
+.hub__hint { position: absolute; left: 50%; top: calc(50% + 72px); transform: translateX(-50%); z-index: 5; font: 600 11px/1 var(--font-mono); letter-spacing: .14em; color: var(--muted); opacity: 0; animation: hint-in 1s 2.2s ease both; pointer-events: none; white-space: nowrap; }
+.hub__hint.is-on { opacity: 1; color: var(--glow); }
+@keyframes hint-in { to { opacity: .8; } }
+.hub--static .hub__hint { display: none; }
+body:not(.is-revealed) .hub__worlds, body:not(.is-revealed) .hub__bottom { opacity: 0; }
+body.is-revealed .hub__worlds, body.is-revealed .hub__bottom { opacity: 1; transition: opacity 1s ease; }
+
+/* --- mobil / dar --- */
+@media (max-width: 820px), (max-height: 520px) {
+  .hub { grid-template-rows: auto 1fr auto; padding-top: var(--topbar-h); }
+  .hub__worlds { flex-direction: column; min-height: 0; }
+  .world { min-height: 46dvh; flex: none !important; align-items: flex-end; }
+  .world.is-far { filter: none; }
+  .hub__logo { position: relative; left: auto; top: auto; transform: none; margin: 10px auto -6px; width: 120px; order: -1; padding: 8px; background: none; }
+  .hub__hint { display: none; }
+  .world__text { max-width: none; padding-bottom: 28px; }
+  .world__text h2 { font-size: clamp(30px, 9vw, 44px); }
+  .world__text .lede { font-size: 14px; }
+  .tv { bottom: auto; top: 16px; left: auto; right: 6%; transform: none; width: clamp(96px, 26vw, 140px); }
+  .cabs { bottom: auto; top: 14px; left: auto; right: 6%; transform: scale(.82); transform-origin: top right; }
+  .world__text--right { margin-left: 0; text-align: left; justify-items: start; }
+  .hub__bottom { min-height: 0; }
+}
