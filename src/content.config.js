@@ -6,12 +6,12 @@
 //  arayüzde otomatik gizlenir, çalışmayan düğme oluşmaz.
 // =====================================================================
 
-// Site bir alt klasörde yayınlanır (GitHub Pages: /juit-site/). public/ altındaki
+// Site juitexe.com kökünden yayınlanır (base '/'). public/ altındaki
 // yerel dosyaların yolunu bu yardımcıyla yaz; geliştirmede ve yayında doğru
 // ön ek otomatik eklenir. Boş değer boş kalır (düğme/kapak gizlenir).
 import { EXPERIMENTS } from './config/experiments.js';   // laboratuvar deney listesi (id, no, başlık)
 
-const RAW_BASE = import.meta.env.BASE_URL;                      // geliştirmede ve yayında '/juit-site/'
+const RAW_BASE = import.meta.env.BASE_URL;                      // geliştirmede ve yayında '/'
 const BASE = RAW_BASE.endsWith('/') ? RAW_BASE.slice(0, -1) : RAW_BASE;
 export const asset = p => (p ? BASE + (p.startsWith('/') ? p : '/' + p) : p);
 

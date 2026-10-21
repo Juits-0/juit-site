@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 const here = p => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
-  // GitHub Pages alt klasörde yayınlanır: https://juits-0.github.io/juit-site/
-  base: '/juit-site/',
+  // Özel domainde kökten yayınlanır: https://juitexe.com/ (public/CNAME)
+  base: '/',
   server: { port: 5173, strictPort: false, host: true },
   build: {
     target: 'es2020',
