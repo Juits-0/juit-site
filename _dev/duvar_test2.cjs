@@ -1,0 +1,23 @@
+const { chromium } = require('C:/Claude/UnityProject1/node_modules/playwright');
+(async () => {
+  const b = await chromium.launch({ channel: 'chrome' });
+  const errs=[];
+  let p = await b.newPage({ viewport: { width: 1280, height: 720 } });
+  p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); }); p.on('pageerror', e => errs.push(e.message));
+  await p.goto('http://localhost:5181/lab.html#/deney/duvar'); await p.waitForTimeout(1200);
+  await p.mouse.click(1240, 652); await p.waitForTimeout(300);
+  console.log('tech', await p.evaluate(() => window.__exp.tech));
+  await p.keyboard.down('ArrowUp'); await p.waitForTimeout(900); await p.keyboard.up('ArrowUp');
+  await p.keyboard.down('ArrowRight'); await p.waitForTimeout(500); await p.keyboard.up('ArrowRight');
+  await p.screenshot({ path: '_dev/duvar_d_tech.png' });
+  await p.close();
+  p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  p.on('console', m => { if (m.type() === 'error') errs.push(m.text()); }); p.on('pageerror', e => errs.push(e.message));
+  await p.goto('http://localhost:5181/lab.html#/deney/duvar'); await p.waitForTimeout(1200);
+  await p.keyboard.down('ArrowUp'); await p.waitForTimeout(2200);
+  console.log('m', await p.evaluate(() => [window.__exp.x, window.__exp.y, window.__exp.bumps, window.__exp.view.w]));
+  await p.keyboard.up('ArrowUp'); await p.waitForTimeout(150);
+  await p.screenshot({ path: '_dev/duvar_m.png' });
+  console.log(errs);
+  await b.close();
+})();
