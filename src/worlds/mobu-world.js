@@ -7,7 +7,7 @@ import { mountLab } from './lab-mount.js';
 const pad = n => String(n).padStart(2, '0');
 
 export function videoCard(v) {
-  const badge = v.placeholder ? `<span class="chip chip--example vcard__badge" title="YouTube bağlantısı henüz eklenmedi (content.config.js)">örnek</span>` : '';
+  const badge = v.placeholder ? `<span class="chip chip--example vcard__badge">yakında</span>` : '';
   return `<button class="vcard" type="button" data-n="${v.n}" aria-label="${escapeHTML(v.title)} — izle">
     <span class="vcard__screen"><img class="vcard__poster" src="${v.poster}" alt="" loading="lazy" decoding="async"><video class="vcard__loop" muted loop playsinline preload="none" src="${v.loop}"></video><i class="vcard__scan"></i>${badge}<span class="vcard__play" aria-hidden="true">▶</span></span>
     <span class="vcard__meta"><span class="vcard__n mono">#${pad(v.n)}</span><span class="vcard__topic chip">${escapeHTML(v.topic)}</span></span>
@@ -29,7 +29,7 @@ export function openVideo(v, app) {
         el.innerHTML = `<div class="player"><iframe class="player__frame" src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.youtubeId)}?autoplay=1&rel=0&playsinline=1&modestbranding=1" title="${escapeHTML(v.title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`;
       } else {
         el.innerHTML = `<div class="player player--local"><video class="player__frame" controls muted loop playsinline autoplay poster="${v.poster}" src="${v.loop}"></video>
-          <div class="player__note"><span class="chip chip--example">örnek içerik</span><p>Bu video için YouTube bağlantısı henüz eklenmedi. Şimdilik sessiz bir önizleme dönüyor.<br><span class="muted mono">content.config.js → videos[${v.n - 1}].youtubeId</span></p></div></div>`;
+          <div class="player__note"><span class="chip chip--example">yakında</span><p>Bu video çok yakında YouTube'da. Şimdilik sessiz bir önizleme dönüyor.</p></div></div>`;
         $('video', el)?.play?.().catch(() => { });
       }
     },

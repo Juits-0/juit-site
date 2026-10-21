@@ -63,7 +63,6 @@ export function mount(main, app) {
       <div class="hall__row" id="hall-row">${games.map(cabinet).join('')}${labCab}</div>
       <i class="hall__floor"></i>
     </div>
-    <div class="arcade__inner"><p class="muted" style="font-size:13px">Kabinler <span class="mono">content.config.js → games</span> listesinden gelir. Web sürümü olan bir oyunun itch.io "embed-upload" adresini <span class="mono">embedUrl</span> alanına yazınca ekran doğrudan oynanabilir olur.</p></div>
   </section>`;
   const row = $('#hall-row', main);
   row.addEventListener('click', e => { const c = e.target.closest('.cabinet[data-slug]'); if (!c) return; const g = games.find(x => x.slug === c.dataset.slug); if (g) openGame(g, app) });

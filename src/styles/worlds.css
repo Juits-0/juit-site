@@ -17,9 +17,18 @@
 .linklike { background: none; border: 0; padding: 0; color: var(--glow); cursor: pointer; font: inherit; text-decoration: underline; text-underline-offset: 3px; }
 
 /* oynatıcı */
-.modal--video .modal__frame { --modal-w: min(92vw, 520px); }
+/* Shorts 9:16 kalmalı: genişlik, ekranın kalan yüksekliğinden türetilir (iki satırlık başlık ≈ 100px + kenar boşlukları) */
+.modal--video .modal__frame { --modal-w: min(100%, 520px, calc((100dvh - 140px) * 9 / 16)); }
+/* dar oynatıcıda düğmeler başlığın altına iner: 1. satır başlık + kapat, 2. satır düğmeler */
+.modal--video .modal__head { flex-wrap: wrap; row-gap: 8px; padding: 10px 10px 10px 14px; }
+.modal--video .modal__title { order: 1; }
+.modal--video .modal__close { order: 2; }
+.modal--video .modal__actions { order: 3; flex: 1 0 100%; flex-wrap: wrap; }
+.modal--video .modal__actions:empty { display: none; }
+.modal--video .modal__body { overflow: hidden; }
+.modal--video .modal__body:has(.player--local) { overflow: auto; }
 .player { display: grid; place-items: center; background: #000; }
-.player__frame { width: 100%; aspect-ratio: 9 / 16; max-height: calc(100dvh - 140px); border: 0; background: #000; object-fit: contain; }
+.player__frame { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border: 0; background: #000; object-fit: contain; }
 .player--local { grid-template-columns: 1fr; }
 .player__note { display: grid; gap: 8px; justify-items: start; padding: 14px 16px 18px; background: var(--bg2); width: 100%; font-size: 14px; color: var(--text-2); }
 
@@ -117,6 +126,9 @@
 /* ---------- MOBU KATMANI ---------- */
 .mobu-layer { position: fixed; inset: 0; z-index: 850; pointer-events: none; }
 .mobu-hit { position: fixed; left: 0; top: 0; z-index: 851; background: transparent; border: 0; padding: 0; cursor: pointer; border-radius: 50%; }
+/* modal açıkken Mobu modalın arkasına geçer: oynatıcının köşesini ve kontrollerini kapatmasın */
+body.is-locked .mobu-layer { z-index: 790; }
+body.is-locked .mobu-hit { display: none; }
 .mobu-hit:focus-visible { outline: 2px dashed var(--glow); }
 .mobu-hit[hidden] { display: none; }
 body:not(.is-ready) .mobu-layer, body:not(.is-ready) .mobu-hit { display: none; }

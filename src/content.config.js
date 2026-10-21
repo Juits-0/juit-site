@@ -168,8 +168,7 @@ export const secret = {
   title: 'Mobu\'nun çekmecesi',
   blurb: 'Yarım kalanlar, ilk çizimler ve komik bug\'lar burada birikecek.',
   items: [
-    { kind: 'sketch', title: 'İlk Mobu eskizleri', text: 'Üç sivri saç, yuvarlak kulaklar ve "-_-" ifadesi ilk denemeden beri yerinde.', placeholder: true },
+    { kind: 'sketch', title: 'İlk Mobu eskizleri', text: 'Üç sivri saç, yuvarlak kulaklar ve "-_-" ifadesi ilk denemeden beri yerinde.', placeholder: false },
     { kind: 'bug',    title: 'Sol üstte beliren Mobu', text: 'Bir videoda Mobu taşınırken bir anlığına ekranın sol üstüne ışınlandı. Artık her kare kontrol ediliyor.', placeholder: false },
-    { kind: 'proto',  title: 'Yarım kalan deney', text: 'ÖRNEK: Buraya bir prototipin kısa kaydı ya da gif\'i gelecek.', placeholder: true },
   ],
 };
