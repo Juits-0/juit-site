@@ -23,7 +23,7 @@ const { chromium } = require('C:/Claude/UnityProject1/node_modules/playwright');
         await page.waitForTimeout(400);
         console.log('method ->', await S(() => JSON.stringify({ m: window.__exp.method, mobu: window.__exp.mobu.position.toArray(), ball: window.__exp.ball.p.toArray() })));
       }
-      await page.evaluate(() => [...document.querySelectorAll('.btn-set')].find(b => /Çevre/.test(b.textContent)).click());
+      await page.evaluate(() => [...document.querySelectorAll('.btn-set')].find(b => /Haritayı/.test(b.textContent)).click());
       await page.waitForTimeout(300);
     } else {
       await page.screenshot({ path: out.replace('.png', '_a.png') });

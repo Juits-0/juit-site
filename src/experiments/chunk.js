@@ -14,7 +14,7 @@ const LOAD_T = 0.25, UNLOAD_T = 0.3;
 const RMAX = 4, FULL = (2 * RMAX + 1) ** 2;     // bellek çubuğu: radius 4 → 81 chunk
 const SPAWN_T = 4;                              // başlangıç karosu (chunk 0,0 içinde)
 const DEEP = 0, WATER = 1, SAND = 2, GRASS = 3, DGRASS = 4, TREE = 5, ROCK = 6;
-const COL = ['#0b1a33', '#102a4d', '#5b5169', '#17372f', '#10292a', '#17372f', '#10292a'];
+const COL = ['#0F2238', '#16304A', '#5A4E3C', '#17302A', '#122520', '#17302A', '#122520'];
 
 // ---- deterministik gürültü ----
 function hI(a, b, s) {
@@ -116,6 +116,7 @@ export default class Chunk extends Experiment {
       }
       if (solid(k)) objs.push({ k, x: px + TS / 2, y: py + TS - 2, row: j, s: hv, wx: cx * CS + px + TS / 2, wy: cy * CS + py + TS - 2 });
     }
+    g.fillStyle = 'rgba(40,24,90,.14)'; g.fillRect(0, 0, CS + 1, CS + 1);      // gece: morumsu ton
     this.loads++;
     return { cx, cy, cv, objs, state: instant ? 'active' : 'loading', t0: instant ? -9 : T };
   }
@@ -251,7 +252,7 @@ export default class Chunk extends Experiment {
     g.restore();
     // vinyet
     const v = g.createRadialGradient(W / 2, H / 2, H * 0.4, W / 2, H / 2, Math.max(W, H) * 0.7);
-    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(60,20,120,.38)'); g.fillStyle = v; g.fillRect(0, 0, W, H);
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(70,24,140,.5)'); g.fillStyle = v; g.fillRect(0, 0, W, H);
     this._memBar(g, W);
   }
 
@@ -260,11 +261,11 @@ export default class Chunk extends Experiment {
     g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.ellipse(x, y, 12, 4, 0, 0, 7); g.fill();
     if (o.k === TREE) {
       g.fillStyle = '#2d2234'; g.fillRect(x - 2.5, y - 12, 5, 12);
-      g.fillStyle = '#1c4a3a'; g.strokeStyle = '#0a1816'; g.lineWidth = 2;
+      g.fillStyle = '#214433'; g.strokeStyle = '#0b0912'; g.lineWidth = 2;
       g.beginPath(); g.arc(x, y - 22, 14 + o.s * 2, 0, 7); g.fill(); g.stroke();
-      g.fillStyle = 'rgba(120,200,170,.12)'; g.beginPath(); g.arc(x - 4, y - 26, 7, 0, 7); g.fill();
+      g.fillStyle = 'rgba(150,170,200,.10)'; g.beginPath(); g.arc(x - 4, y - 26, 7, 0, 7); g.fill();
     } else {
-      g.fillStyle = '#4a4764'; g.strokeStyle = '#13111c'; g.lineWidth = 2; g.lineJoin = 'round';
+      g.fillStyle = '#3A3446'; g.strokeStyle = '#0b0912'; g.lineWidth = 2; g.lineJoin = 'round';
       g.beginPath(); g.moveTo(x - 12, y); g.lineTo(x - 9, y - 11); g.lineTo(x - 2, y - 17); g.lineTo(x + 7, y - 13); g.lineTo(x + 12, y - 4); g.lineTo(x + 10, y); g.closePath(); g.fill(); g.stroke();
       g.fillStyle = 'rgba(255,255,255,.1)'; g.beginPath(); g.moveTo(x - 8, y - 10); g.lineTo(x - 2, y - 15); g.lineTo(x + 3, y - 11); g.lineTo(x - 4, y - 8); g.closePath(); g.fill();
     }
@@ -315,7 +316,7 @@ export default class Chunk extends Experiment {
   }
 
   _memBar(g, W) {
-    const w = Math.min(W - 40, 300), x0 = (W - w) / 2, y = 30, n = this.map.size, k = clamp(n / FULL);
+    const w = Math.min(W - 24, 210), x0 = W - 12 - w, y = 28, n = this.map.size, k = clamp(n / FULL);
     txt(g, 'BELLEK', x0, y - 11, 12, LAV, 'left', 800, true);
     txt(g, `${n} parça · ${n * CN * CN} karo`, x0 + w, y - 11, 12, '#F5F5F5', 'right', 700, true);
     g.fillStyle = 'rgba(0,0,0,.55)'; g.beginPath(); g.roundRect(x0 - 2, y - 2, w + 4, 12, 6); g.fill();

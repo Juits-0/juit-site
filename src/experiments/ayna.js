@@ -45,9 +45,9 @@ const METHODS = {
 };
 
 const GOALS = [
-  { text: 'Topu kameranın görüşünden çıkar. Aynada ne oluyor?', short: 'Topu görüşten çıkar' },
-  { text: 'Aynanın önünden geç. Hangi yöntem hareketini takip ediyor?', short: 'Aynanın önünden geç' },
-  { text: 'Kamera açısını değiştir, kaybolan yansımayı bul.', short: 'Kamerayı 60°+ çevir' },
+  { text: 'Topu kameranın görüşünden çıkar. Aynada ne oluyor?', short: 'Topu görüşten çıkar', done: 'Top görüşten çıktı' },
+  { text: 'Aynanın önünden geç. Hangi yöntem hareketini takip ediyor?', short: 'Aynanın önünden geç', done: 'Aynanın önünden geçtin' },
+  { text: 'Kamera açısını değiştir, kaybolan yansımayı bul.', short: 'Kamerayı 60°+ çevir', done: 'Kamera 60°+ döndü' },
 ];
 
 // ---------------------------------------------------------------- shader'lar
@@ -680,7 +680,7 @@ export default class AynaExperiment extends Experiment {
     const set = this.prog[i];
     if (set.has(this.method)) return;
     set.add(this.method);
-    this.toast(`✓ ${GOALS[i].short} — ${METHODS[this.method].short}`);
+    this.toast(`✓ ${GOALS[i].done} — ${METHODS[this.method].short}`);
     if (this.audio) this.audio.play('success');
     this._hudDirty = true;
     this._refreshGoal();
@@ -1258,12 +1258,16 @@ export default class AynaExperiment extends Experiment {
       left.push(`Kare süresi (ort. ${this.ft.length}): ${ft.toFixed(1)} ms · CPU ${cpu.toFixed(1)}`);
       if (this.method === 'ssr') left.push(`Top ana kamerada: ${this._ballOut ? 'HAYIR → yansımada yok' : 'evet'}`);
     }
-    const right = GOALS.map((g, i) => {
-      const s = this.prog ? this.prog[i] : new Set();
-      const ms = [...s].map((m) => METHODS[m].short).join(', ');
-      return `${s.size ? '✓' : '·'} ${g.short}${ms ? ` (${ms})` : ''}`;
-    });
-    if (this.prog && !this.done) right.push(`Her görev ≥2 yöntemde: ${this.prog.reduce((a, s) => a + Math.min(2, s.size), 0)}/6`);
+    // görev listesi ve sayaç yalnızca teknik görünümde; normalde aktif görev setGoal ile gösterilir
+    const right = [];
+    if (this.tech) {
+      GOALS.forEach((g, i) => {
+        const st = this.prog ? this.prog[i] : new Set();
+        const ms = [...st].map((m) => METHODS[m].short).join(', ');
+        right.push(`${st.size ? '✓' : '·'} ${g.short}${ms ? ` (${ms})` : ''}`);
+      });
+      if (this.prog) right.push(`Her görev ≥2 yöntemde: ${this.prog.reduce((a, st) => a + Math.min(2, st.size), 0)}/6`);
+    }
     this.hud({ left, right });
   }
 

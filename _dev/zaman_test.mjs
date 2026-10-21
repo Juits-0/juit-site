@@ -1,7 +1,7 @@
 import { createRequire } from 'node:module';
 const require = createRequire('C:/Claude/UnityProject1/node_modules/');
 const { chromium } = require('playwright');
-const BASE='http://localhost:5187/lab.html#/deney/zaman', OUT='C:/Claude/juit-site/_dev/shots/';
+const BASE='http://localhost:5188/lab.html#/deney/zaman', OUT='C:/Claude/juit-site/_dev/shots/';
 const b = await chromium.launch({ channel: 'chrome' });
 const logs=[];
 const mkp = async (w,h,mob)=>{const c=await b.newContext({viewport:{width:w,height:h},deviceScaleFactor:mob?2:1,hasTouch:!!mob,isMobile:!!mob});const p=await c.newPage();

@@ -3,7 +3,7 @@
 ## Çalıştırma
 ```
 npm i
-npx vite --port 5180                       # geliştirme → http://localhost:5180/lab.html
+npm run dev:lab                            # geliştirme → http://localhost:5180/lab.html (vite.lab.config.js)
 npx vite build --config vite.lab.config.js # üretim derlemesi → dist-lab/
 npx vite preview --config vite.lab.config.js --port 5180
 ```

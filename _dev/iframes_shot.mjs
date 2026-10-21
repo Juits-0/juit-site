@@ -10,7 +10,7 @@ async function open(w, h, mobile) {
   const p = await ctx.newPage();
   p.on('console', m => { if (['error', 'warning'].includes(m.type())) logs.push(`[${w}] ${m.type()}: ${m.text()}`); });
   p.on('pageerror', e => logs.push(`[${w}] PE: ${e.message}`));
-  await p.goto(URL); await p.waitForTimeout(1800); return p;
+  await p.goto(URL,{waitUntil:'domcontentloaded',timeout:60000}); await p.waitForTimeout(1800); return p;
 }
 const setup = (kb) => { const e = window.__exp, inp = e.input; e.setSetting('iframesMs', 2000); e.setSetting('iframes', true); e.setSetting('knockback', kb); e.reset();
   e.x = 560; e.sim = 1.5; e.camera.x = 560; inp.codes.clear();

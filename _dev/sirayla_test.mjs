@@ -22,17 +22,28 @@ const res = await p.evaluate(() => {
   const step = () => { e.time += 1 / 120; e.frame++; e.update(1 / 120); inp.endFrame && inp.endFrame(); };
   function bot() {
     const A = e._arena(); let best = -1e9, bx = 0, by = 0;
-    for (let k = 0; k < 24; k++) {
-      const an = k / 24 * Math.PI * 2, dx = Math.cos(an), dy = Math.sin(an);
-      const px = Math.min(A.x1 - 30, Math.max(A.x0 + 30, e.mx + dx * 140)), py = Math.min(A.y1 - 10, Math.max(A.y0 + 50, e.my + dy * 140 * 0.85));
-      let sc = 0, mn = 1e9;
-      for (const n of e.en) {
-        let d = Math.hypot(px - n.x, py - n.y);
-        if (n.st === 'prep' || n.st === 'lunge') d *= 0.45;
-        else if (n.token) d *= 0.8;
-        mn = Math.min(mn, d); sc += Math.min(d, 260) * 0.02;
+    const thr = e.en.filter(n => n.st === 'prep' || n.st === 'lunge');
+    for (let k = -1; k < 24; k++) {
+      const an = k / 24 * Math.PI * 2, dx = k < 0 ? 0 : Math.cos(an), dy = k < 0 ? 0 : Math.sin(an);
+      let danger = 0;
+      for (const n of thr) {
+        const rem = n.st === 'prep' ? 0.35 - n.t : 0;
+        let q = { x: e.mx + dx * 200 * rem, y: e.my + dy * 200 * 0.85 * rem };
+        q.x = Math.min(A.x1 - 24, Math.max(A.x0 + 24, q.x)); q.y = Math.min(A.y1 - 6, Math.max(A.y0 + 44, q.y));
+        let ux, uy;
+        if (n.st === 'lunge') { ux = n.ax; uy = n.ay; } else { const ddx = q.x - n.x, ddy = q.y - n.y, dd = Math.hypot(ddx, ddy) || 1; ux = ddx / dd; uy = ddy / dd; }
+        const lt = n.st === 'lunge' ? 0.2 - n.t : 0.2;
+        let ex = n.x - (n.st === 'prep' ? ux * 16 : 0), ey = n.y - (n.st === 'prep' ? uy * 16 : 0), mx = q.x, my = q.y;
+        for (let t = 0; t < lt; t += 0.01) {
+          ex += ux * 520 * 0.01; ey += uy * 520 * 0.01;
+          mx = Math.min(A.x1 - 24, Math.max(A.x0 + 24, mx + dx * 200 * 0.01)); my = Math.min(A.y1 - 6, Math.max(A.y0 + 44, my + dy * 200 * 0.85 * 0.01));
+          if (Math.hypot(mx - ex, my - ey) < 56) { danger += 1; break; }
+        }
       }
-      sc += mn * 0.1 - Math.hypot(px - A.cx, py - A.cy) * 0.01;
+      // yakin kovalayanlardan uzak dur
+      const px = Math.min(A.x1 - 30, Math.max(A.x0 + 30, e.mx + dx * 100)), py = Math.min(A.y1 - 10, Math.max(A.y0 + 50, e.my + dy * 100 * 0.85));
+      let mn = 1e9; for (const n of e.en) { let d = Math.hypot(px - n.x, py - n.y); if (n.token) d *= 0.85; mn = Math.min(mn, d); }
+      const wd = Math.min(px - A.x0, A.x1 - px, py - A.y0, A.y1 - py); const sc = -danger * 1000 - Math.max(0, 90 - wd) * (window.__ww || 2) + Math.min(mn, 200) - Math.hypot(px - A.cx, py - A.cy) * (window.__cw || 0.15) + (k < 0 ? -8 : 0);
       if (sc > best) { best = sc; bx = dx; by = dy; }
     }
     ax = bx; ay = by;
@@ -49,15 +60,21 @@ const res = await p.evaluate(() => {
     }
     return tries;
   }
-  const out = {};
-  for (const [q, n, m] of [[true, 6, 2], [false, 6, 2], [true, 10, 2], [false, 10, 2], [true, 6, 1], [true, 12, 4]]) out[`q=${q} n=${n} m=${m}`] = run(q, n, m, false);
-  out.still_on = run(true, 6, 2, true); out.still_off = run(false, 6, 2, true);
-  // complete bir kez?
+  function hitsIn20(queue, n, maxAtk, noBot) {
+    e.setSetting('enemies', n); e.setSetting('maxAtk', maxAtk); e.setSetting('queue', queue); e.reset();
+    for (let i = 0; i < 120 * 23 && e.st === 'play'; i++) { e.hp = 99; if (noBot) { ax = 0; ay = 0; } else bot(); step(); }
+    return e.hits;
+  }
+  const dbg=[]; const oh=e._hit.bind(e); e._hit=(n)=>{ const A=e._arena(); dbg.push([e.t.toFixed(1), "wall", Math.round(Math.min(e.mx-A.x0,A.x1-e.mx,e.my-A.y0,A.y1-e.my)), "thr", e.en.filter(x=>x.st==="prep"||x.st==="lunge").length, "spd", e.speed.toFixed(1), "prepT", (n.px!==undefined)]); oh(n); };
+  const out = {}; out.cw = {}; for (const cw of [0.05, 0.15, 0.3, 0.5, 0.8]) { window.__cw = cw; window.__ww = 2; out.cw[cw] = [hitsIn20(true, 6, 2, false), hitsIn20(false, 6, 2, false)]; } window.__cw = 0.15;
+  for (const [q, n, m] of [[true, 6, 2], [false, 6, 2], [true, 10, 2], [false, 10, 2], [true, 6, 1], [true, 12, 4], [false, 12, 4], [true, 3, 1], [false, 3, 1]]) out["q="+q+" n="+n+" m="+m] = { bot: hitsIn20(q, n, m, false), still: hitsIn20(q, n, m, true) };
+  e.setSetting("enemies",6);e.setSetting("maxAtk",1);e.setSetting("queue",true);e.reset();dbg.length=0;for(let i=0;i<2400&&e.st==="play";i++){e.hp=99;bot();step();} out.dbg=dbg;
+  out.real = {}; for (const q of [true, false]) out.real[q ? 'on' : 'off'] = run(q, 6, 2, false);
   e.setSetting('enemies', 6); e.setSetting('maxAtk', 2); e.setSetting('queue', true); e.reset(); completes = 0;
-  for (let i = 0; i < 120 * 40; i++) { bot(true); step(); if (e.st === 'dead') break; }
-  out.completes = completes; out.completed = e.completed; out.st = e.st;
+  for (let i = 0; i < 120 * 40; i++) { e.hp = 99; bot(); step(); if (e.st === 'won') { for (let j = 0; j < 400; j++) step(); break; } }
+  out.completes = completes; out.completed = e.completed; out.st = e.st; out.hits = e.hits;
   return out;
 });
-console.log(JSON.stringify(res, null, 1));
-console.log(logs.length ? logs.join('\n') : 'KONSOL TEMIZ');
+console.log(JSON.stringify(res));
+console.log(logs.filter(l => !/AudioContext/.test(l)).join(" | ") || "KONSOL TEMIZ");
 await b.close();

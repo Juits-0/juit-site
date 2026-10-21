@@ -1,4 +1,5 @@
 // runner.js — deney ekranını kurar ve çalıştırır (döngü, boyutlandırma, ayar paneli, HUD, kartlar).
+import { CHANNEL } from '../config/experiments.js';
 import { Input } from './input.js';
 import { TouchControls } from './touch.js';
 import { audio } from './audio.js';
@@ -22,17 +23,26 @@ export class Runner {
     if (this.reduced == null) this.reduced = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
     this.tech = !!store.get('tech', false);
     this._build();
+    this._ac = new AbortController();
+    window.addEventListener('keydown', e => {
+      if (e.key !== 'Escape' || e.repeat) return;
+      if (!this.el.help.hidden) this._toggleHelp(false); else this.app.goLab();
+    }, { signal: this._ac.signal });
     this._create();
-    this.last = 0; this.acc = 0; this.shakePx = 0; this.flashA = 0; this.interacted = false;
+    this.last = performance.now(); this.lastTick = this.last; this.acc = 0; this.shakePx = 0; this.flashA = 0; this.interacted = false;
     this.raf = requestAnimationFrame(this._frame);
+    // bekçi: rAF bir sebeple gelmezse (odaksız/arka plan sekmesi) döngüyü zamanlayıcı ilerletir. Sadece document.hidden iken durur.
+    this._wd = setInterval(() => { if (!document.hidden && this.exp && performance.now() - this.lastTick > 50) this._tick(performance.now(), true); }, 25);
   }
 
   stop() {
+    clearInterval(this._wd); this._wd = 0;
     cancelAnimationFrame(this.raf); this.raf = 0;
     if (this.exp) { try { this.exp.dispose(); } catch (e) { console.error(e); } this.exp = null; }
     if (this.ro) { this.ro.disconnect(); this.ro = null; }
     if (this.input) { this.input.dispose(); this.input = null; }
     if (this.touch) { this.touch.destroy(); this.touch = null; }
+    if (this._ac) { this._ac.abort(); this._ac = null; }
     clearTimeout(this._toastT); clearTimeout(this._goalT);
     this.root.innerHTML = '';
     if (window.__exp) window.__exp = null;
@@ -48,16 +58,16 @@ export class Runner {
         <button class="btn btn-back" type="button" data-a="back" aria-label="Laboratuvara dön">←<span class="hide-s"> Laboratuvar</span></button>
         <h1 class="exp-title"><span class="exp-no">#${pad2(c.no)}</span><span class="exp-title-t">${esc(c.title)}</span></h1>
         <div class="exp-tools">
-          <button class="btn btn-video" type="button" data-a="video" ${c.video ? '' : 'disabled title="Bağlantı eklenecek"'}>🎬<span class="hide-s"> Video</span></button>
+          <button class="btn btn-video" type="button" data-a="video" title="${c.video ? 'Bu bölümün videosu' : 'Video bağlantısı eklenecek · JUIT kanalını aç'}">🎬<span class="hide-s"> ${c.video ? 'Video' : 'Kanal'}</span></button>
           <button class="btn btn-icon" type="button" data-a="sound" aria-label="Ses" title="Ses"></button>
           <button class="btn btn-icon" type="button" data-a="help" aria-label="Bu deney nedir?" title="Bu deney nedir?">?</button>
         </div>
       </header>
       <div class="exp-main">
+        <div class="exp-goal"><span class="goal-k">AMAÇ</span><span class="goal-t"></span><span class="goal-hint"></span></div>
         <div class="exp-stage">
           <div class="exp-view"></div>
-          <div class="exp-goal"><span class="goal-k">AMAÇ</span><span class="goal-t"></span><span class="goal-hint"></span></div>
-          <div class="exp-hud"><div class="hud-l"></div><div class="hud-r"></div></div>
+          <div class="exp-hud"></div>
           <div class="exp-toast" role="status" aria-live="polite"></div>
           <div class="exp-flash"></div>
           <div class="exp-help" hidden></div>
@@ -70,7 +80,7 @@ export class Runner {
         </section>
       </div>`;
     const q = s => this.root.querySelector(s);
-    this.el = { view: q('.exp-view'), stage: q('.exp-stage'), goal: q('.exp-goal'), goalT: q('.goal-t'), goalH: q('.goal-hint'), hudL: q('.hud-l'), hudR: q('.hud-r'), toast: q('.exp-toast'), flash: q('.exp-flash'), help: q('.exp-help'), card: q('.exp-card'), panel: q('.exp-panel'), pbody: q('.panel-body'), quick: q('.exp-quick'), sound: q('[data-a=sound]'), video: q('[data-a=video]') };
+    this.el = { view: q('.exp-view'), stage: q('.exp-stage'), goal: q('.exp-goal'), goalT: q('.goal-t'), goalH: q('.goal-hint'), hud: q('.exp-hud'), toast: q('.exp-toast'), flash: q('.exp-flash'), help: q('.exp-help'), card: q('.exp-card'), panel: q('.exp-panel'), pbody: q('.panel-body'), quick: q('.exp-quick'), sound: q('[data-a=sound]'), video: q('[data-a=video]') };
     this.el.goalT.textContent = c.goal;
     this._soundUI();
     this._buildPanel(Cls.settings || []);
@@ -78,7 +88,7 @@ export class Runner {
       const b = e.target.closest('[data-a]'); if (!b || !this.root.contains(b)) return;
       const a = b.dataset.a;
       if (a === 'back') this.app.goLab();
-      else if (a === 'video' && this.cfg.video) window.open(this.cfg.video, '_blank', 'noopener');
+      else if (a === 'video') { const u = this.cfg.video || CHANNEL.url; if (u) window.open(u, '_blank', 'noopener'); }
       else if (a === 'sound') { audio.enabled = !audio.enabled; this._soundUI(); if (audio.enabled) audio.play('click'); }
       else if (a === 'help') this._toggleHelp();
       else if (a === 'sheet') { const o = this.el.panel.classList.toggle('open'); b.setAttribute('aria-expanded', o); }
@@ -99,13 +109,13 @@ export class Runner {
     groups.set('Görünüm', [
       { key: '__tech', label: 'Teknik görünüm', type: 'toggle', builtin: true },
       { key: '__reduced', label: 'Hareketi azalt', type: 'toggle', builtin: true },
-      { key: '__restart', label: 'Yeniden başlat', type: 'button', builtin: true },
+      { key: '__restart', label: 'Yeniden başlat', type: 'button', builtin: true, mobile: true },
     ]);
     this.ctrls = [];
     const body = this.el.pbody; body.innerHTML = '';
     for (const [name, list] of groups) {
       const sec = document.createElement('div'); sec.className = 'pgroup';
-      sec.innerHTML = `<h3>${esc(name)}</h3>`;
+      sec.innerHTML = `<div class="ghead"><h3>${esc(name)}</h3>${name === 'Görünüm' ? '<button class="btn btn-mini" type="button" data-a="restart">↺ Yeniden başlat</button>' : ''}</div>`;
       for (const s of list) sec.appendChild(this._mkCtrl(s));
       body.appendChild(sec);
     }
@@ -121,7 +131,7 @@ export class Runner {
   }
 
   _mkCtrl(s) {
-    const row = document.createElement('div'); row.className = 'set set-' + s.type;
+    const row = document.createElement('div'); row.className = 'set set-' + s.type + (s.mobile ? ' set-restart' : '');
     const id = 'c_' + s.key;
     if (s.type === 'toggle') {
       row.innerHTML = `<span class="lbl">${esc(s.label)}</span><button type="button" role="switch" class="sw" aria-checked="false" aria-label="${esc(s.label)}"><i></i></button>`;
@@ -201,7 +211,7 @@ export class Runner {
       cfg: this.cfg, container: this.container || null, _rt: this,
     });
     window.__exp = this.exp;      // geliştirme/test kolaylığı
-    this.exp.init();
+    try { this.exp.init(); } catch (e) { console.error('Deney init hatası', e); }
     this._sync();
     this.ro = new ResizeObserver(() => this._resize());
     this.ro.observe(host);
@@ -228,17 +238,22 @@ export class Runner {
   // ---------- döngü ----------
   _frame = ts => {
     this.raf = requestAnimationFrame(this._frame);
+    this._tick(ts);
+  };
+  _tick(ts, wd) {
+    this.lastTick = performance.now();
     if (!this.exp) return;
-    if (document.hidden || !this.last) { this.last = ts; return; }
-    const dt = Math.min((ts - this.last) / 1000, 1 / 30); this.last = ts;
+    if (document.hidden) { this.last = ts; return; }
+    const dt = Math.max(0, Math.min((ts - this.last) / 1000, wd ? 0.075 : 1 / 30)); this.last = ts;
+    const lim = wd ? 9 : 4;
     this.acc += dt; let n = 0;
-    while (this.acc >= STEP && n < 4) { this._step(); this.acc -= STEP; n++; }
-    if (n >= 4) this.acc = 0;
+    while (this.acc >= STEP && n < lim) { this._step(); this.acc -= STEP; n++; }
+    if (n >= lim) this.acc = 0;
     // sarsıntı / flaş sönümü
     this.shakePx *= Math.pow(0.0005, dt); if (this.shakePx < 0.2) this.shakePx = 0;
     if (this.flashA > 0) { this.flashA = Math.max(0, this.flashA - dt * 2.2); this.el.flash.style.opacity = this.flashA; }
     this._render();
-  };
+  }
   _step() {
     const e = this.exp;
     if (this.input.pressed('reset')) this.restart();
@@ -269,14 +284,23 @@ export class Runner {
   }
   hud(o) {
     const key = JSON.stringify(o || null); if (key === this._hudKey) return; this._hudKey = key;
-    const fill = (el, arr) => { el.innerHTML = (arr || []).map(s => `<div>${esc(s)}</div>`).join(''); };
-    fill(this.el.hudL, o && o.left); fill(this.el.hudR, o && o.right);
+    const all = [...((o && o.left) || []), ...((o && o.right) || [])];
+    this.el.hud.innerHTML = all.map(s => `<div>${esc(s)}</div>`).join('');
+    this.el.hud.hidden = !all.length;
   }
   _toggleHelp(force) {
     const h = this.el.help, show = force == null ? h.hidden : force;
     if (show) {
       const ctl = this.Cls.controls || {};
-      h.innerHTML = `<div class="help-box"><h2>${esc(this.cfg.title)}</h2><p class="help-goal"><b>Amaç:</b> ${esc(this.cfg.goal)}</p>${ctl.hint ? `<p class="help-hint">${esc(ctl.hint)}</p>` : ''}<p>${esc(this.cfg.lesson)}</p><button class="btn btn-primary" type="button" data-a="closehelp">Tamam</button></div>`;
+      const keys = [ctl.hint, ctl.hintTouch && ('Dokunmatik: ' + ctl.hintTouch)].filter(Boolean);
+      h.innerHTML = `<div class="help-box" role="dialog" aria-modal="true" aria-label="Bu deney nedir?">
+        <button class="help-x btn btn-icon" type="button" data-a="closehelp" aria-label="Kapat">✕</button>
+        <h2>${esc(this.cfg.title)}</h2>
+        <p class="help-goal"><b>Amaç:</b> ${esc(this.cfg.goal)}</p>
+        ${keys.length ? `<h4>Kontroller</h4><ul class="help-keys">${keys.map(k => `<li>${esc(k)}</li>`).join('')}</ul>` : ''}
+        <h4>Ne öğreniyoruz?</h4><p>${esc(this.cfg.lesson)}</p>
+        <button class="btn btn-primary" type="button" data-a="closehelp">Tamam</button></div>`;
+      if (!h._bd) { h._bd = true; h.addEventListener('click', e => { if (e.target === h) this._toggleHelp(false); }); }
     }
     h.hidden = !show;
   }
@@ -293,7 +317,7 @@ export class Runner {
         <button class="btn btn-primary" type="button" data-a="again">Tekrar</button>
         <button class="btn" type="button" data-a="back">Laboratuvar</button>
         ${this.nextCfg ? '<button class="btn btn-primary" type="button" data-a="next">Sıradaki deney →</button>' : ''}
-        <button class="btn" type="button" data-a="video" ${c.video ? '' : 'disabled title="Bağlantı eklenecek"'}>🎬 Video</button>
+        <button class="btn" type="button" data-a="video">🎬 ${c.video ? 'Video' : 'JUIT kanalı'}</button>
       </div></div>`;
     card.hidden = false;
   }

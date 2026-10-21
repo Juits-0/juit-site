@@ -4,3 +4,9 @@ Port 5187 is in use, trying another one...
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5188[22m/[39m
   [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.6:[1m5188[22m/[39m
+[2m03:54:51[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/lab/lab.js[22m
+[2m03:55:01[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/labworld/main.js[22m
+[2m03:55:12[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/core/runner.js[22m
+[2m03:55:30[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/labworld/style.css[22m
+[2m03:55:54[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/labworld/style.css[22m
+[2m03:56:13[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mpage reload [39m[2msrc/experiments/boss.js[22m

@@ -1,0 +1,10 @@
+const fs=require('fs');const f='src/experiments/chunk.js';let s=fs.readFileSync(f,'utf8');
+const r=(a,b)=>{if(!s.includes(a))console.log('MISS',a.slice(0,40));s=s.replace(a,b)};
+r("const COL = ['#0b1a33', '#102a4d', '#5b5169', '#17372f', '#10292a', '#17372f', '#10292a'];","const COL = ['#0F2238', '#16304A', '#5A4E3C', '#17302A', '#122520', '#17302A', '#122520'];");
+r("g.fillStyle = '#1c4a3a'; g.strokeStyle = '#0a1816'","g.fillStyle = '#214433'; g.strokeStyle = '#0b0912'");
+r("g.fillStyle = '#4a4764'; g.strokeStyle = '#13111c'","g.fillStyle = '#3A3446'; g.strokeStyle = '#0b0912'");
+r("rgba(120,200,170,.12)","rgba(150,170,200,.10)");
+r("    this.loads++;\n    return { cx","    g.fillStyle = 'rgba(40,24,90,.14)'; g.fillRect(0, 0, CS + 1, CS + 1);      // gece: morumsu ton\n    this.loads++;\n    return { cx");
+r("'rgba(60,20,120,.38)'","'rgba(70,24,140,.5)'");
+r("const w = Math.min(W - 40, 300), x0 = (W - w) / 2, y = 30,","const w = Math.min(W - 24, 210), x0 = W - 12 - w, y = 28,");
+fs.writeFileSync(f,s);

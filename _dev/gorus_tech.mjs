@@ -1,0 +1,12 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const b = await chromium.launch({ channel: 'chrome' });
+const ctx = await b.newContext({ viewport: { width: 1280, height: 720 } });
+const p = await ctx.newPage(); const logs=[];
+p.on('console', m => { if (['error','warning'].includes(m.type())) logs.push(m.text()); }); p.on('pageerror', e => logs.push(e.message));
+await p.goto('http://localhost:5182/lab.html#/deney/gorus', {waitUntil:'domcontentloaded'}); await p.waitForTimeout(2500);
+await p.evaluate(() => { const e = window.__exp; e.setSetting('showLos', true); e.x = 330; e.y = 340; e.tech = true; e.onTech(true); });
+await p.waitForTimeout(150);
+await p.screenshot({ path: 'C:/Claude/juit-site/_dev/shots/gorus_tech.png' });
+console.log(logs.join('\n')||'KONSOL TEMIZ'); await b.close();

@@ -8,15 +8,15 @@ import { Particles, glowAt, bangMark, speedLines } from '../core/fx.js';
 import { txt, bar } from '../core/ui.js';
 
 const WS = 560;                         // dünya karesi
-const S = 0.28, MR = 12;                // Mobu ölçeği ve çarpışma yarıçapı
+const S = 0.24, MR = 11;                // Mobu ölçeği ve çarpışma yarıçapı
 const SPD = 170, CHASE = 200, CHASE_T = 1.5, SEEN_T = 0.5, LOSE_T = 1.0, RAYS = 48;
-const START = { x: 44, y: 516 }, DOOR = { x: 506, y: 50 };
+const START = { x: 62, y: 498 }, DOOR = { x: 506, y: 50 };
 // duvar blokları [x,y,w,h]: iki L biçimli sığınak, orta bar ve iki yan bar (180° dönüşüm simetrisi)
 const WALLS = [
-  [100, 380, 34, 140], [100, 380, 150, 34],
-  [426, 40, 34, 140], [310, 146, 150, 34],
-  [230, 265, 100, 30],
-  [60, 200, 100, 34], [400, 326, 100, 34],
+  [100, 380, 40, 140], [100, 380, 150, 40],
+  [420, 40, 40, 140], [310, 140, 150, 40],
+  [230, 262, 100, 36],
+  [80, 200, 100, 40], [380, 320, 100, 40],
 ];
 // nöbetçiler: rot = iki açı arasında döner (derece), pat = devriye yolu
 const SENT = [
@@ -37,7 +37,7 @@ export default class Gorus extends Experiment {
   static settings = [
     { key: 'occlusion', label: 'Engeller görüşü keser', type: 'toggle', value: true, group: 'Görüş' },
     { key: 'fov', label: 'Görüş açısı', type: 'range', value: 70, min: 30, max: 180, step: 5, unit: '°', group: 'Görüş' },
-    { key: 'range', label: 'Görüş mesafesi', type: 'range', value: 180, min: 80, max: 300, step: 10, unit: 'px', group: 'Görüş' },
+    { key: 'range', label: 'Görüş mesafesi', type: 'range', value: 150, min: 80, max: 300, step: 10, unit: 'px', group: 'Görüş' },
     { key: 'showCone', label: 'Görüş konisi', type: 'toggle', value: true, group: 'Görünüm' },
     { key: 'showLos', label: 'Görüş hattı', type: 'toggle', value: false, group: 'Görünüm' },
   ];
@@ -208,12 +208,12 @@ export default class Gorus extends Experiment {
       g.stroke();
     }
     g.save(); g.beginPath(); g.rect(0, 0, WS, WS); g.clip();
-    this._walls(g);
-    this._door(g, T);
     if (this.s.showCone || this.tech) for (const s of this.sent) this._cone(g, s, T);
     if (this.tech) for (const s of this.sent) this._rays(g, s);
+    this._walls(g);
+    this._door(g, T);
     g.restore();
-    g.strokeStyle = 'rgba(182,124,255,.55)'; g.lineWidth = 3; g.strokeRect(0, 0, WS, WS);
+    g.strokeStyle = 'rgba(182,124,255,.45)'; g.lineWidth = 1.5; g.strokeRect(0, 0, WS, WS);
     // başlangıç işareti
     g.strokeStyle = 'rgba(182,124,255,.35)'; g.lineWidth = 2; g.setLineDash([6, 5]); g.beginPath(); g.ellipse(START.x, START.y + 2, 26, 12, 0, 0, 7); g.stroke(); g.setLineDash([]);
     if (this.s.showLos || this.tech) for (const s of this.sent) this._los(g, s);
@@ -231,7 +231,7 @@ export default class Gorus extends Experiment {
 
   _walls(g) {
     WALLS.forEach(([x, y, w, h], i) => {
-      poly(g, [[x, y], [x + w, y], [x + w, y + h], [x, y + h]], '#2B2B2B', 8000 + i * 7, 4, HATCH_L);
+      poly(g, [[x, y], [x + w, y], [x + w, y + h], [x, y + h]], '#202026', 8000 + i * 7, 4, HATCH_L);
       g.strokeStyle = 'rgba(182,124,255,.7)'; g.lineWidth = 2.5; g.strokeRect(x + 1, y + 1, w - 2, h - 2);
     });
   }
@@ -261,10 +261,10 @@ export default class Gorus extends Experiment {
     const pts = this._fan(s), hot = s.mode === 'chase' ? 1 : clamp(s.det);
     g.beginPath(); g.moveTo(s.x, s.y); for (const p of pts) g.lineTo(p[0], p[1]); g.closePath();
     const gr = g.createRadialGradient(s.x, s.y, 4, s.x, s.y, this.s.range);
-    const c = hot > 0.2 ? '255,80,100' : '230,140,255';
-    gr.addColorStop(0, `rgba(${c},${0.30 + hot * 0.15})`); gr.addColorStop(1, `rgba(${c},${0.08 + hot * 0.10})`);
+    const c = hot > 0.2 ? '255,80,100' : '225,215,255';
+    gr.addColorStop(0, `rgba(${c},${0.14 + hot * 0.08})`); gr.addColorStop(1, `rgba(${c},${0.10 + hot * 0.12})`);
     g.fillStyle = gr; g.fill();
-    g.strokeStyle = `rgba(${c},${0.45 + hot * 0.3})`; g.lineWidth = 1.5; g.stroke();
+    g.strokeStyle = `rgba(${c},${0.3 + hot * 0.3})`; g.lineWidth = 1; g.stroke();
   }
   _rays(g, s) {
     const pts = this._fan(s);
@@ -291,15 +291,15 @@ export default class Gorus extends Experiment {
   _sentry(g, s, T) {
     const chase = s.mode === 'chase', alert = !chase && s.det > 0.2;
     const j = clamp((T - s.jolt) / 0.28), lift = j < 1 ? Math.sin(j * Math.PI) * 14 : 0;
-    const e = { x: s.x, y: s.y, s: 0.7, flip: s.lookX < 0 ? -1 : 1, lift, lookX: s.lookX, face: chase ? 'angry' : alert ? 'alert' : 'wait' };
+    const e = { x: s.x, y: s.y, s: 0.5, flip: s.lookX < 0 ? -1 : 1, lift, lookX: s.lookX, face: chase ? 'angry' : alert ? 'alert' : 'wait' };
     if (chase) { e.foot = Math.sin(T * 24 + s.i) * 5; e.rot = s.lookX * 0.08; }
-    if (chase) speedLines(g, s.x - s.lookX * 30, s.y - 40, -s.lookX, 1, 0.7);
+    if (chase) speedLines(g, s.x - s.lookX * 22, s.y - 30, -s.lookX, 1, 0.5);
     if (this.st === 'caught' && chase) { e.sy = 1 + Math.sin(T * 30) * 0.03; }
     enemy(g, e, s.i + 1);
   }
 
   _marks(g, s, T) {
-    const top = s.y - 128;
+    const top = s.y - 96;
     if (s.mode === 'chase') bangMark(g, s.x, top + 6, 0.3, eBack(clamp((T - s.jolt) / 0.2)), T);
     else if (s.det >= 0.2) {
       const k = eBack(clamp((T - s.qT) / 0.2));
@@ -308,15 +308,15 @@ export default class Gorus extends Experiment {
       g.restore();
     }
     if (s.det > 0.01 || this.tech) {
-      const bw = 38, bx = s.x - bw / 2, by = top + 14;
+      const bw = 38, bx = s.x - bw / 2, by = top + 4;
       g.fillStyle = 'rgba(0,0,0,.6)'; g.beginPath(); g.roundRect(bx - 2, by - 2, bw + 4, 9, 4); g.fill();
       bar(g, bx, by, bw, 5, clamp(s.det), s.det >= 1 ? RED : PURPLE, 'rgba(255,255,255,.14)');
     }
   }
   _label(g, s) {
     const fs = 11 / this.camera.z;
-    const lx = clamp(s.x + 26, 70, WS - 70);
-    txt(g, `${this.s.fov}° · ${this.s.range} px`, lx, s.y + 6, fs, LAV, 'center', 700, true);
+    const lx = clamp(s.x, 50, WS - 50), ly = Math.max(12, s.y - 130);
+    txt(g, `${this.s.fov}° · ${this.s.range} px`, lx, ly, fs, LAV, 'center', 700, true);
   }
 
   _mobu(g, T) {

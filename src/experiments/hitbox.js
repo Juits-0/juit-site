@@ -234,7 +234,7 @@ export default class Hitbox extends Experiment {
     // tech: yardım konisi
     if (this.tech && this.s.assist > 0 && tg.state === 'idle') this._cone(g, T);
     this._target(g, T);
-    if (boxOn && tg.state === 'idle') this._boxes(g, T);
+    if (boxOn) this._boxes(g, T, tg.state === 'idle' ? 1 : 1 - lin(T - tg.hitT, 0.2, RESPAWN));
     // Mobu + tabanca (Mobu'dan sonra)
     const m = this._mobu(T, this.aimA);
     drawMobu(g, m);
@@ -271,7 +271,7 @@ export default class Hitbox extends Experiment {
     let rot = 0, al = 1, sy = 1;
     if (t.state === 'fall') {
       const u = T - t.hitT;
-      rot = eOut(lin(u, 0, 0.35)) * 1.45 * t.fallDir; al = 1 - lin(u, 0.35, RESPAWN); sy = 1 - 0.1 * lin(u, 0.2, 0.4);
+      rot = eOut(lin(u, 0.12, 0.42)) * 1.45 * t.fallDir; al = 1 - lin(u, 0.4, RESPAWN); sy = 1 - 0.1 * lin(u, 0.3, 0.5);
     }
     g.save(); g.globalAlpha = al * 0.35; g.fillStyle = '#000'; g.beginPath(); g.ellipse(x, GY + 3, 58 * s, 10 * s, 0, 0, 7); g.fill(); g.restore();
     g.save(); g.globalAlpha = al;
@@ -279,9 +279,9 @@ export default class Hitbox extends Experiment {
     g.restore();
   }
 
-  _boxes(g, T) {
+  _boxes(g, T, al = 1) {
     const sh = this._shape(T), { hb } = sh;
-    g.save(); g.lineWidth = 1.2; g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineJoin = 'round';
+    g.save(); g.globalAlpha = al; g.lineWidth = 1.2; g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineJoin = 'round';
     for (const p of sh.prims) {
       g.beginPath();
       if (p.k === 'e') g.ellipse(p.cx, p.cy, p.rx, p.ry, 0, 0, 7); else { g.moveTo(p.pts[0][0], p.pts[0][1]); g.lineTo(p.pts[1][0], p.pts[1][1]); g.lineTo(p.pts[2][0], p.pts[2][1]); g.closePath(); }
@@ -357,7 +357,7 @@ export default class Hitbox extends Experiment {
   }
 
   _topHud(g, W) {
-    const cx = W - 92, cy = 34, n = Math.min(this.hits, GOAL);
+    const cx = W - 92, cy = W < 700 ? 100 : 34, n = Math.min(this.hits, GOAL);
     roundBox(g, cx, cy, 160, 44, 12, 'rgba(23,23,23,.82)', 'rgba(139,61,255,.6)', 2);
     txt(g, `VURUŞ ${n}/${GOAL}`, cx, cy - 8, 15, LAV, 'center', 900);
     for (let i = 0; i < GOAL; i++) { g.fillStyle = i < n ? PURPLE : 'rgba(255,255,255,.16)'; g.beginPath(); g.arc(cx - 63 + i * 14, cy + 11, 4, 0, 7); g.fill(); }

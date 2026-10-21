@@ -1,0 +1,23 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const B = process.env.BASE || 'http://localhost:5193';
+const b = await chromium.launch({ channel: 'chrome' });
+const ctx = await b.newContext({ viewport: { width: 1280, height: 720 } });
+await ctx.addInitScript(() => { window.requestAnimationFrame = () => 0; });   // rAF tamamen bastırıldı
+const p = await ctx.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
+const st = () => p.evaluate(() => { const e = document.getElementById('exp'), l = document.getElementById('lab'), f = document.getElementById('flash'); const cv = document.querySelector('.exp-view canvas'); let px = -1; if (cv) { const c = document.createElement('canvas'); c.width = 30; c.height = 30; const g = c.getContext('2d'); g.drawImage(cv, 0, 0, 30, 30); const d = g.getImageData(0, 0, 30, 30).data; px = 0; for (let i = 0; i < d.length; i += 4) px += d[i] + d[i + 1] + d[i + 2]; } return { hash: location.hash, exp: getComputedStyle(e).opacity + (e.classList.contains('hidden') ? ' hidden' : ''), expCls: e.className, lab: l.classList.contains('hidden') ? 'hidden' : 'görünür', flash: getComputedStyle(f).opacity, frame: window.__exp ? __exp.frame : null, px }; });
+await p.goto(`${B}/lab.html#/deney/chunk`, { waitUntil: 'domcontentloaded' }); await p.waitForTimeout(1000);
+console.log('chunk   ', JSON.stringify(await st()));
+await p.evaluate(() => { location.hash = '#/deney/gorus'; }); await p.waitForTimeout(1500);
+console.log('gorus   ', JSON.stringify(await st()));
+await p.evaluate(() => { location.hash = '#/'; }); await p.waitForTimeout(1500);
+console.log('lab     ', JSON.stringify(await st()));
+await p.keyboard.press('Digit3'); await p.waitForTimeout(6000);
+console.log('lab→coy ', JSON.stringify(await st()));
+await p.evaluate(() => { location.hash = '#/'; }); await p.waitForTimeout(2000);
+console.log('coy→lab ', JSON.stringify(await st()), 'lab.time', await p.evaluate(() => __lab.time));
+await p.evaluate(() => { location.hash = '#/deney/odul'; }); await p.waitForTimeout(1500);
+console.log('odul    ', JSON.stringify(await st()));
+console.log(errs.join('|') || 'hata yok');
+await b.close();

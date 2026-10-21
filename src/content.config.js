@@ -28,7 +28,7 @@ export const site = {
 //  Sosyal ve iletişim bağlantıları. URL boşsa düğme gizlenir.
 // ---------------------------------------------------------------------
 export const socials = {
-  youtube: { label: 'YouTube', url: '', placeholder: true },   // ÖRNEK: kanal linkini ekle (https://www.youtube.com/@...)
+  youtube: { label: 'YouTube', url: 'https://www.youtube.com/@Juitexe' },
   itch:    { label: 'itch.io', url: 'https://juit.itch.io/' },
   instagram: { label: 'Instagram', url: '' },
   x:       { label: 'X', url: '' },
@@ -38,8 +38,8 @@ export const socials = {
 };
 
 export const contact = {
-  email: 'merhaba@juit.example',   // ÖRNEK: gerçek e-posta adresini yaz
-  placeholder: true,
+  email: 'juitexe@gmail.com',
+  placeholder: false,
   note: 'İş birliği, soru ya da sadece selam için.',
 };
 
@@ -53,18 +53,21 @@ export const contact = {
 //  lab: videoyla aynı numaralı laboratuvar deneyi; labs listesinden otomatik bağlanır
 // ---------------------------------------------------------------------
 export const videos = [
-  { n: 1,  slug: 'dusmanlar-sirayla',     title: 'Oyunlardaki düşmanlar neden sırayla saldırıyor?',            youtubeId: '', face: 'scared', topic: 'Saldırı yöneticisi' },
-  { n: 2,  slug: 'dusmanlar-nasil-gorur', title: 'Oyunlardaki düşmanlar seni nasıl görüyor?',                  youtubeId: '', face: 'sus',    topic: 'Görüş konisi' },
-  { n: 3,  slug: 'hatali-ziplamalar',     title: 'Oyunlar neden hatalı zıplamalarını affediyor?',              youtubeId: '', face: 'o',      topic: 'Coyote time' },
-  { n: 4,  slug: 'yonlendirme',           title: 'Oyunlar seni fark ettirmeden nasıl yönlendiriyor?',          youtubeId: '', face: 'calm',   topic: 'Çevresel yönlendirme' },
-  { n: 5,  slug: 'chunk',                 title: 'Sonsuz oyun dünyaları bilgisayarını neden patlatmıyor?',     youtubeId: '', face: 'O',      topic: 'Chunk yükleme' },
-  { n: 6,  slug: 'odul',                  title: 'Oyunlarda ödül toplamak neden bu kadar tatmin edici?',       youtubeId: '', face: 'star',   topic: 'Geri bildirim' },
-  { n: 7,  slug: 'boss-telegraph',        title: 'Bosslar neden saldırmadan önce haber veriyor?',              youtubeId: '', face: 'x',      topic: 'Telegraphing' },
-  { n: 8,  slug: 'zaman-yavaslatma',      title: 'Oyunlarda zamanı nasıl yavaşlatıyorlar?',                    youtubeId: '', face: 'proud',  topic: 'Hit stop & slow-mo' },
-  { n: 9,  slug: 'hitbox',                title: 'Oyunlarda ıskaladığın hâlde nasıl vuruyorsun?',              youtubeId: '', face: 'happy',  topic: 'Hitbox' },
-  { n: 10, slug: 'iframes',               title: 'Oyunlarda vurulunca neden ölümsüz oluyorsun?',               youtubeId: '', face: 'angry',  topic: 'i-frames' },
-  { n: 11, slug: 'lod',                   title: 'Oyunlarda uzaktaki nesneler neden daha kötü görünüyor?',     youtubeId: '', face: 'flat',   topic: 'LOD' },
-  { n: 12, slug: 'ayna',                  title: 'Oyunlardaki aynalar neden bazen çalışmıyor?',                youtubeId: '', face: 'sad',    topic: 'Yansıma' },
+  { n: 1,  slug: 'dusmanlar-sirayla',     title: 'Oyunlardaki düşmanlar neden sırayla saldırıyor?',            youtubeId: 'JP8GdNk129I', face: 'scared', topic: 'Saldırı yöneticisi' },
+  { n: 2,  slug: 'dusmanlar-nasil-gorur', title: 'Oyunlardaki düşmanlar seni nasıl görüyor?',                  youtubeId: 'lFPYpOPnbuU', face: 'sus',    topic: 'Görüş konisi' },
+  { n: 3,  slug: 'hatali-ziplamalar',     title: 'Oyunlar neden hatalı zıplamalarını affediyor?',              youtubeId: 'Io_tup3kwgQ', face: 'o',      topic: 'Coyote time' },
+  { n: 4,  slug: 'yonlendirme',           title: 'Oyunlar seni fark ettirmeden nasıl yönlendiriyor?',          youtubeId: 'Z_8KyhrweN0', face: 'calm',   topic: 'Çevresel yönlendirme' },
+  { n: 5,  slug: 'chunk',                 title: 'Sonsuz oyun dünyaları bilgisayarını neden patlatmıyor?',     youtubeId: 'ziPOciIKHck', face: 'O',      topic: 'Chunk yükleme' },
+  { n: 6,  slug: 'odul',                  title: 'Oyunlarda ödül toplamak neden bu kadar tatmin edici?',       youtubeId: 'RhnBtZKoLLI', face: 'star',   topic: 'Geri bildirim' },
+  { n: 7,  slug: 'boss-telegraph',        title: 'Bosslar neden saldırmadan önce haber veriyor?',              youtubeId: 'iBi8zSmxhUc', face: 'x',      topic: 'Telegraphing' },
+  { n: 8,  slug: 'zaman-yavaslatma',      title: 'Oyunlarda zamanı nasıl yavaşlatıyorlar?',                    youtubeId: 'xJ9mcfhXjNk', face: 'proud',  topic: 'Hit stop & slow-mo' },
+  { n: 9,  slug: 'hitbox',                title: 'Oyunlarda ıskaladığın hâlde nasıl vuruyorsun?',              youtubeId: 'zFeikOStBBY', face: 'happy',  topic: 'Hitbox' },
+  { n: 10, slug: 'iframes',               title: 'Oyunlarda vurulunca neden ölümsüz oluyorsun?',               youtubeId: 'fCLPYu6DHhs', face: 'angry',  topic: 'i-frames' },
+  { n: 11, slug: 'lod',                   title: 'Oyunlarda uzaktaki nesneler neden daha kötü görünüyor?',     youtubeId: 'Y_-jcvNt3Xs', face: 'flat',   topic: 'LOD' },
+  { n: 12, slug: 'ayna',                  title: 'Oyunlardaki aynalar neden bazen çalışmıyor?',                youtubeId: 'LfwRGc50Fh4', face: 'sad',    topic: 'Yansıma' },
+  { n: 13, slug: 'gorunmez-duvar',        title: 'Oyunlarda görünmez duvarlar neden var?',                     youtubeId: 'DA2mNoOmNvM', face: 'x',      topic: 'Görünmez sınır' },
+  { n: 14, slug: 'gizli-yukleme',         title: 'Oyunlar yükleme ekranlarını nasıl gizliyor?',                youtubeId: 'FdkdoHB89j8', face: 'closed', topic: 'Level streaming' },
+  { n: 15, slug: 'culling',               title: 'Oyunlarda neden kameranın görmediği şeyler kayboluyor?',     youtubeId: '',            face: 'O',      topic: 'Culling' },
 ].map(v => ({
   ...v,
   poster: asset(`/videos/posters/${String(v.n).padStart(2, '0')}.jpg`),

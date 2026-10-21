@@ -119,4 +119,39 @@ function ayna(g, t, w, h) {
   const rx = mx + (mx - x); if (rx > mx && rx < w - 12) { g.globalAlpha = 0.5; dot(g, rx, h / 2 + 4, 8, GL); g.globalAlpha = 1; }
 }
 
-export const PREVIEWS = { sirayla, gorus, coyote, yonlendirme, chunk, odul, boss, zaman, hitbox, iframes, lod, ayna };
+// 13 · görünmez duvar: nokta sınıra yürür, çarpar, geri seker; çarpınca mor panel belirir
+function duvar(g, t, w, h) {
+  base(g, w, h); const gy = h * 0.7, wx = w * 0.66, u = (t % 2) / 2;
+  g.fillStyle = '#2B2B2B'; g.beginPath(); g.moveTo(wx + 6, gy); g.lineTo(wx + 26, gy - 34); g.lineTo(wx + 44, gy - 18); g.lineTo(w, gy - 40); g.lineTo(w, gy); g.fill();
+  floor(g, wx, gy);
+  const hitK = u > 0.5 ? Math.max(0, 1 - (u - 0.5) * 4) : 0;
+  g.fillStyle = `rgba(182,124,255,${0.12 + hitK * 0.5})`; g.fillRect(wx - 3, 10, 6, gy - 10);
+  const x = u < 0.5 ? lerp(18, wx - 10, eIO(u * 2)) : wx - 10 - eOut(clamp((u - 0.5) * 3)) * 22;
+  dot(g, x, gy - 8, 7, W);
+  if (hitK > 0) { g.fillStyle = `rgba(233,221,255,${hitK})`; g.font = '900 12px sans-serif'; g.textAlign = 'center'; g.fillText('?', x, gy - 22); }
+}
+// 14 · gizli yükleme: kapı açıklığı = yükleme çubuğu
+function yukleme(g, t, w, h) {
+  base(g, w, h); const gy = h * 0.8, dx = w * 0.62, dw = 34, dh = 62, k = clamp((t % 3) / 2.4);
+  floor(g, w, gy);
+  g.fillStyle = '#1b1526'; g.fillRect(dx - dw / 2, gy - dh, dw, dh);
+  g.fillStyle = 'rgba(182,124,255,.35)'; g.fillRect(dx - dw / 2, gy - dh, dw, dh * k);
+  g.fillStyle = '#3a3050'; g.fillRect(dx - dw / 2, gy - dh + dh * k, dw, dh * (1 - k));
+  g.strokeStyle = GL; g.lineWidth = 2; g.strokeRect(dx - dw / 2, gy - dh, dw, dh);
+  dot(g, dx - 40, gy - 8, 7, W);
+  g.fillStyle = '#2B2B2B'; g.fillRect(12, 12, w - 24, 5); g.fillStyle = P; g.fillRect(12, 12, (w - 24) * k, 5);
+}
+// 15 · culling: dönen görüş konisi; koni dışındaki ağaçlar kesik kontur
+function culling(g, t, w, h) {
+  base(g, w, h); const cx = w * 0.5, cy = h * 0.85, a = -Math.PI / 2 + Math.sin(t * 0.9) * 0.9, half = 0.42, R0 = h * 0.8;
+  g.fillStyle = 'rgba(139,61,255,.18)'; g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, R0, a - half, a + half); g.closePath(); g.fill();
+  for (let i = 0; i < 6; i++) {
+    const tx = 18 + i * ((w - 36) / 5), ty = 26 + (i % 2) * 16, d = Math.atan2(ty - cy, tx - cx) - a;
+    const inside = Math.abs(Math.atan2(Math.sin(d), Math.cos(d))) < half;
+    g.beginPath(); g.arc(tx, ty, 8, 0, 7);
+    if (inside) { g.fillStyle = GL; g.fill(); } else { g.strokeStyle = '#3a3050'; g.lineWidth = 1.5; g.setLineDash([2, 2.5]); g.stroke(); g.setLineDash([]); }
+  }
+  dot(g, cx, cy, 6, W);
+}
+
+export const PREVIEWS = { sirayla, gorus, coyote, yonlendirme, chunk, odul, boss, zaman, hitbox, iframes, lod, ayna, duvar, yukleme, culling };

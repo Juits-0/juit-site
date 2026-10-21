@@ -10,12 +10,14 @@ import { Particles, starPoly } from '../core/fx.js';
 import { txt, bar, hearts, pill } from '../core/ui.js';
 
 // ---- sabitler (px, sn) ----
-const MS = 0.3, ES = 0.8;                 // Mobu / düşman ölçeği
-const MOBU_SPD = 220, EN_SPD = 150;
-const ATK_RANGE = 95, HIT_R = 52;         // saldırı başlama mesafesi, temas yarıçapı
-const PREP = 0.35, LUNGE = 0.2, REST = 1.2, LUNGE_SPD = 520, RECOIL = 16;
+const MS = 0.3, ES = 0.66;                 // Mobu / düşman ölçeği
+const MOBU_SPD = 200, EN_SPD = 170;
+const ATK_RANGE = 95, ATK_RANGE_OFF = 110, HIT_R = 46;         // saldırı başlama mesafesi, temas yarıçapı
+const PREP = 0.35, LUNGE = 0.2, REST_ON = 1.5, REST_OFF = 0.6, LUNGE_SPD = 520, RECOIL = 16;
 const RING_R = 170, SURVIVE = 20, HEARTS = 5, INVULN = 0.5, SEED = 20260101;
-const SEP = 40;                           // düşmanlar arası min. mesafe
+const GRANT_CD = 1.0;                    // sıra: hak bırakıldıktan sonra yenisi verilmeden önce bekleme
+const SEP = 40, PRE = 1.0;          // başlangıçta hazırlan süresi
+                           // düşmanlar arası min. mesafe
 
 export default class Sirayla extends Experiment {
   static id = 'sirayla';
@@ -42,7 +44,7 @@ export default class Sirayla extends Experiment {
   // ---- arena dikdörtgeni ----
   _arena() {
     const W = this.view.w, H = this.view.h;
-    const aw = Math.min(W - 24, 760), x0 = (W - aw) / 2, y0 = 52, y1 = H - 12;
+    const aw = Math.min(W - 24, 760), x0 = (W - aw) / 2, y0 = 52, y1 = (this.view.cssW < 600 ? H - 130 : H - 12);
     return { x0, x1: x0 + aw, y0, y1, cx: x0 + aw / 2, cy: (y0 + y1) / 2 + 20 };
   }
   _clamp(o, padX = 26) {
@@ -51,21 +53,29 @@ export default class Sirayla extends Experiment {
     o.y = clamp(o.y, A.y0 + 44, A.y1 - 6);
   }
 
+  // Mobu merkezde, düşmanlar arena kenarı boyunca eşit açılı (simetrik) dizilir
+  _place() {
+    const A = this._arena(), n = this.en.length;
+    this.mx = A.cx; this.my = A.cy;
+    const rx = (A.x1 - A.x0) / 2 - 40, ry = Math.min(A.y1 - 8 - A.cy, A.cy - (A.y0 + 46)) - 2;
+    this.en.forEach((e, i) => {
+      const a = -Math.PI / 2 + Math.PI / n + (i / n) * Math.PI * 2;
+      e.x = A.cx + Math.cos(a) * rx; e.y = A.cy + Math.sin(a) * ry; e.off = a; e.dir = e.x < this.mx ? 1 : -1;
+    });
+  }
+  resize() { if (this.en && this.en.length && this.pre > 0 && this.st === 'play') this._place(); }
+
   reset() {
     const A = this._arena(), n = this.s.enemies | 0, r = rng(SEED);
     this.parts.clear();
     this.t = 0; this.st = 'play'; this.stT = 0; this.hp = HEARTS; this.hits = 0; this.invuln = 0; this.hitT = -9;
     this.mx = A.cx; this.my = A.cy; this.kx = 0; this.ky = 0; this.mdir = 1; this.phase = 0; this.speed = 0;
-    this.lastSec = SURVIVE + 1; this.fear = 0;
+    this.lastSec = SURVIVE + 1; this.grantAt = 0; this.lastAtker = -1; this.fear = 0;
     // düşmanlar: eşit açılı halka + deterministik sapma, hep aynı seed
+    this.pre = PRE; this.preMax = PRE;
     this.en = [];
-    const a0 = r() * Math.PI * 2;
-    for (let i = 0; i < n; i++) {
-      const a = a0 + (i / n) * Math.PI * 2 + (r() - 0.5) * 0.3, d = 230 + r() * 40;
-      const e = { i, x: this.mx + Math.cos(a) * d, y: this.my + Math.sin(a) * d * 0.9, st: 'chase', t: 0, token: false, slot: -1,
-        dir: 1, ax: 0, ay: 0, ox: 0, oy: 0, lift: 0, hx: 0, hy: 0 };
-      this._clamp(e); this.en.push(e);
-    }
+    for (let i = 0; i < n; i++) this.en.push({ i, x: 0, y: 0, st: 'chase', t: 0, token: false, slot: -1, lastAtk: -100 + i, dir: 1, off: 0, ax: 0, ay: 0, ox: 0, oy: 0, lift: 0, walkT: 0 });
+    this._place();
     this.slotOwner = new Array(n).fill(-1);
     this._assignTokens();
     this.hud(null);
@@ -95,9 +105,10 @@ export default class Sirayla extends Experiment {
     let holders = 0;
     for (const e of E) if (e.token && (e.st === 'chase' || e.st === 'prep' || e.st === 'lunge')) holders++;
     let avail = this.s.maxAtk - holders;
-    if (avail > 0) {
-      const cand = E.filter(e => !e.token && (e.st === 'chase' || e.st === 'slot'))
-        .sort((a, b) => Math.hypot(a.x - this.mx, a.y - this.my) - Math.hypot(b.x - this.mx, b.y - this.my));
+    if (avail > 0 && this.t >= this.grantAt) {
+      let cand = E.filter(e => !e.token && (e.st === 'chase' || e.st === 'slot'));
+      const nl = cand.filter(e => e.i !== this.lastAtker); if (nl.length) cand = nl;   // arka arkaya aynı düşman almaz
+      cand.sort((a, b) => a.lastAtk - b.lastAtk);                                      // en uzun süredir bekleyen önce
       for (const e of cand) {
         if (avail <= 0) break;
         e.token = true; avail--;
@@ -138,7 +149,6 @@ export default class Sirayla extends Experiment {
 
   _play(dt, T) {
     const ax = this.input.axis.x, ay = this.input.axis.y;
-    this.t += dt;
     const sec = Math.ceil(SURVIVE - this.t);
     if (sec < this.lastSec && sec <= 3 && sec >= 1) this.audio.play('tick');
     this.lastSec = Math.min(this.lastSec, sec);
@@ -151,6 +161,12 @@ export default class Sirayla extends Experiment {
     this.speed = Math.hypot(ax, ay);
     if (Math.abs(ax) > 0.15) this.mdir = Math.sign(ax);
     if (this.speed > 0.1) this.phase += this.speed * MOBU_SPD * dt * 0.05;
+    if (this.pre > 0) {                       // hazırlan: düşmanlar yerinde tepinir, süre sayacı durur
+      this.pre -= dt;
+      for (const e of this.en) { e.walkT += dt * 12; e.lift = Math.abs(Math.sin(this.time * 7 + e.i * 1.7)) * 5; e.dir = e.x < this.mx ? 1 : -1; e.st = 'chase'; }
+      return;
+    }
+    this.t += dt;
     // --- düşmanlar ---
     this._assignTokens();
     let fear = 0;
@@ -186,10 +202,12 @@ export default class Sirayla extends Experiment {
     };
     switch (e.st) {
       case 'chase': {
-        const near = go(this.mx, this.my, 62);
+        let near;
+        if (this.s.queue) near = go(this.mx, this.my, 62);
+        else { const a = e.off, ox = this.mx + Math.cos(a) * 62, oy = this.my + Math.sin(a) * 62 * 0.85; near = go(ox, oy, 4); }  // sırasız: kuşatır
         e.walkT = (e.walkT || 0) + dt * 9;
-        if (e.token && d < ATK_RANGE && this.st === 'play') {
-          e.st = 'prep'; e.t = 0; e.walkT = 0; this.audio.play('warn');
+        if (e.token && d < (this.s.queue ? ATK_RANGE : ATK_RANGE_OFF) && this.st === 'play') {
+          e.st = 'prep'; e.t = 0; e.walkT = 0; e.lastAtk = this.t; this.lastAtker = e.i; this.audio.play('warn');
         }
         void near; break;
       }
@@ -211,11 +229,11 @@ export default class Sirayla extends Experiment {
         e.x += e.ax * LUNGE_SPD * dt; e.y += e.ay * LUNGE_SPD * dt;
         this._clamp(e);
         if (!e.hitDone && Math.hypot(this.mx - e.x, this.my - e.y) < HIT_R && this.invuln <= 0) { e.hitDone = true; this._hit(e); }
-        if (e.t >= LUNGE) { e.st = 'rest'; e.t = 0; e.token = false; }
+        if (e.t >= LUNGE) { e.st = 'rest'; e.t = 0; e.token = false; if (this.s.queue) this.grantAt = this.t + GRANT_CD; }
         break;
       }
       case 'rest':
-        if (e.t >= REST) { e.t = 0; e.st = this.s.queue ? 'slot' : 'chase'; if (!this.s.queue) e.token = true; }
+        if (e.t >= (this.s.queue ? REST_ON : REST_OFF + (e.i % 4) * 0.13)) { e.t = 0; e.st = this.s.queue ? 'slot' : 'chase'; if (!this.s.queue) e.token = true; }
         break;
     }
     this._clamp(e);
@@ -311,10 +329,11 @@ export default class Sirayla extends Experiment {
     let face = 'angry', sx = 1, sy = 1, rot = 0;
     if (e.st === 'prep') { face = 'alert'; const k = eBack(clamp(e.t / PREP)); sy = lerp(1, 0.9, k); sx = lerp(1, 1.08, k); }
     else if (e.st === 'lunge') { face = 'furious'; sx = 1.18; sy = 0.88; }
-    else if (e.st === 'rest') face = e.t < 0.45 ? 'dizzy' : 'angry';
+    else if (e.st === 'rest') face = e.t < (this.s.queue ? 0.45 : 0.3) ? 'dizzy' : 'angry';
     else if (e.st === 'idle') face = this.st === 'won' ? 'confused' : 'dizzy';
     if (this.st === 'dead') face = 'happy';
-    const moving = e.st === 'chase' || (e.st === 'slot' && e.lift === 0);
+    if (e.st === 'slot' && e.slot >= 0) face = 'wait';
+    const moving = e.st === 'chase' || e.st === 'slot';
     const foot = moving ? Math.max(0, Math.sin(e.walkT || 0)) * 8 : 0;
     if (e.st === 'chase' || e.st === 'slot') rot = Math.sin((e.walkT || 0) * 0.5) * 0.04;
     enemy(g, { x, y, s: ES, flip: e.dir, face, sx, sy, rot, lift: e.lift, foot, lookX: e.dir }, e.i);
@@ -370,8 +389,9 @@ export default class Sirayla extends Experiment {
   }
   _techAir(g, T) {
     if (!this.s.queue) return;
+    for (const e of this.en) if (e.st === 'slot' && e.slot >= 0) pill(g, 'BEKLİYOR', e.x, e.y - 128 - e.lift, 'rgba(60,40,100,.9)', 11, '#E9DDFF');
     for (const e of this.en) if (e.token && (e.st === 'chase' || e.st === 'prep' || e.st === 'lunge')) {
-      g.save(); g.translate(e.x + e.ox, e.y + e.oy); g.scale(0.8, 0.8); marker(g, 0, 0, T + e.i, 1); g.restore();
+      g.save(); g.translate(e.x + e.ox, e.y + e.oy); g.scale(0.68, 0.68); marker(g, 0, 0, T + e.i, 1); g.restore();
     }
   }
 
@@ -383,6 +403,10 @@ export default class Sirayla extends Experiment {
     const bx = A.x0 + 2 + HEARTS * 28 + 10, bw = A.x1 - bx - 56;
     bar(g, bx, 18, bw, 8, this.st === 'won' ? 1 : this.t / SURVIVE, warn ? RED : PURPLE);
     txt(g, `${sec} sn`, A.x1 - 2, 22, 18, warn ? RED : LAV, 'right', 900, true);
+    if (this.st === 'play' && this.pre > 0) {
+      const u = this.preMax - this.pre, k = eBack(clamp(u / 0.25)) * (1 - lin(u, 0.8, 1.0));
+      if (k > 0.02) { g.save(); g.translate(this.mx, Math.max(A.y0 + 28, this.my - 230)); g.scale(k, k); pill(g, 'HAZIRLAN', 0, 0, PURPLE, 15); g.restore(); }
+    }
     if (this.st === 'won') pill(g, `Alınan vuruş: ${this.hits}`, A.cx, A.y0 + 22, PURPLE, 15);
   }
 }

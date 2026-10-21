@@ -23,8 +23,8 @@ export function start() {
         flashEl.style.transition = 'none'; flashEl.style.background = '#050407'; flashEl.style.opacity = 1;
         void flashEl.offsetWidth;
         app.goExperiment(id);
-        requestAnimationFrame(() => { flashEl.style.transition = 'opacity .15s linear'; flashEl.style.opacity = 0; });
-      } else app.goExperiment(id);
+        setTimeout(() => { flashEl.style.transition = 'opacity .15s linear'; void flashEl.offsetWidth; flashEl.style.opacity = 0; }, 0);
+      } else { app._fromLab = true; app.goExperiment(id); }
     },
     setFlash(a) { flashEl.style.transition = 'none'; flashEl.style.background = '#8B3DFF'; flashEl.style.opacity = a; },
   };
@@ -38,15 +38,35 @@ export function start() {
     return m ? { id: m[1] } : { id: null };
   }
 
+  // Geçişlerin güvenli sonu: rAF/animasyon karesi gelmese bile hedef ekran görünür, geçici sınıflar temiz.
+  // Zamanlayıcı tabanlıdır, belirteç (token) kontrolü yoktur: o anki rotaya göre idempotent çalışır.
+  let settleT = 0, settleTries = 0;
+  const flashOff = () => { flashEl.style.transition = 'none'; flashEl.style.opacity = 0; };
+  function scheduleSettle(ms) { clearTimeout(settleT); settleTries = 0; settleT = setTimeout(settle, ms); }
+  function settle() {
+    const { id } = parse(), cfg = id && byId(id);
+    expEl.classList.remove('fadein', 'fadeout'); labEl.classList.remove('fadein', 'fadeout');
+    if (cfg) {
+      if (!runner || !runner.exp) { if (++settleTries < 40) settleT = setTimeout(settle, 250); return; }   // modül hâlâ yükleniyor
+      lab.hide(); labEl.classList.add('hidden'); expEl.classList.remove('hidden'); flashOff();
+    } else {
+      if (runner) runner.stop();
+      expEl.classList.add('hidden'); labEl.classList.remove('hidden');
+      if (lab.zoom && ++settleTries < 12) settleT = setTimeout(settle, 300); else if (!lab.zoom) flashOff();
+    }
+  }
+  const reducedNow = () => !!store.get('reduced', false);
+
   async function route() {
     const my = ++token, { id } = parse();
     const cfg = id && byId(id);
     ensureLab();
     if (cfg) {
-      // deney ekranı
+      // deney ekranı. Laboratuvardan zoom ile geldiyse: lab altta kalır, deney çapraz solarak belirir
+      const fade = app._fromLab && !reducedNow(); app._fromLab = false;
       if (!current) lab.prime(id);          // doğrudan açıldıysa lab arka planda Mobu'yu o istasyonun önüne koyar
-      lab.hide();
-      labEl.classList.add('hidden'); expEl.classList.remove('hidden');
+      if (!fade) { lab.hide(); labEl.classList.add('hidden'); }
+      expEl.classList.remove('hidden', 'fadeout'); expEl.classList.toggle('fadein', fade);
       const key = '../experiments/' + id + '.js';
       let Cls = Placeholder;
       try { if (modules[key]) Cls = (await modules[key]()).default || Placeholder; } catch (e) { console.error('Deney yüklenemedi', id, e); }
@@ -54,14 +74,18 @@ export function start() {
       document.title = `${cfg.title} — Mobu'nun Oyun Laboratuvarı`;
       await ensureRunner().start(cfg, Cls);
       current = id; lastExp = id;
-      requestAnimationFrame(() => { flashEl.style.transition = 'opacity .35s ease-out'; flashEl.style.opacity = 0; });
+      setTimeout(() => { flashEl.style.transition = 'opacity .4s ease-out'; void flashEl.offsetWidth; flashEl.style.opacity = 0; }, 0);
+      scheduleSettle(fade ? 600 : 250);
     } else {
-      // laboratuvar
-      if (runner) runner.stop();
-      expEl.classList.add('hidden'); labEl.classList.remove('hidden');
+      // laboratuvar. Deneyden dönüşte: deney solar, kamera monitörden geri çekilir
+      const leaving = current && runner && !reducedNow();
+      labEl.classList.remove('hidden');
       document.title = "Mobu'nun Oyun Laboratuvarı";
       lab.show(current ? lastExp : null);
+      if (leaving) expEl.classList.add('fadeout');
+      else { if (runner) runner.stop(); expEl.classList.add('hidden'); }
       current = null;
+      scheduleSettle(leaving ? 450 : 250);
     }
   }
 

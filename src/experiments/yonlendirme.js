@@ -241,7 +241,7 @@ export default class Yonlendirme extends Experiment {
   _door(g, i, T) {
     const d = DIRS[i], good = i === this.exit, s = this.s;
     g.save(); g.rotate(d.a);
-    const open = good ? eOut(lin(T - this.openT, 0, 0.5)) : 0;
+    const open = good && this.openT > -1 ? eOut(lin(T - this.openT, 0, 0.5)) : 0;
     const col = s.color && good ? PURPLE : GRAYC;
     if (open > 0) {                                  // açılan kapının ardı: ışık
       g.fillStyle = '#d9c6ff'; g.globalAlpha = 0.85; g.fillRect(CL, -CW + 4, 20, CW * 2 - 8); g.globalAlpha = 1;
@@ -295,7 +295,7 @@ export default class Yonlendirme extends Experiment {
     act.forEach((k, i) => {
       let cx, cy;
       if (horiz) { cx = d.x * 246; cy = -CW - 20 - i * (bh + 3) + (d.x > 0 ? 0 : 0); if (d.x < 0) cy = -CW - 20 - i * (bh + 3); }
-      else { cx = CW + 12 + bw / 2; cy = d.y * (CL - 6) + (i - (act.length - 1) / 2) * (bh + 3); }
+      else { cx = CW + 12 + bw / 2; cy = d.y * (CL - 6) - d.y * (14 + i * (bh + 3)); }
       g.fillStyle = 'rgba(20,10,40,.9)'; g.beginPath(); g.roundRect(cx - bw / 2, cy - bh / 2, bw, bh, 8); g.fill();
       g.strokeStyle = PURPLE; g.lineWidth = 1.2; g.stroke();
       txt(g, CUE_TAG[k], cx, cy + 0.5, 12, LAV, 'center', 800, true);

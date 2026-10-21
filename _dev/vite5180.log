@@ -1,5 +1,6 @@
-
-  [32m[1mVITE[22m v6.4.4[39m  [2mready in [0m[1m371[22m[2m[0m ms[22m
-
-  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5180[22m/[39m
-  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.6:[1m5180[22m/[39m
+[31merror when starting dev server:
+Error: Port 5180 is already in use
+    at Server.onError (file:///C:/Claude/juit-site/node_modules/vite/dist/node/chunks/dep-3O3b9SCF.js:25336:18)
+    at Server.emit (node:events:509:28)
+    at emitErrorNT (node:net:2203:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)[39m

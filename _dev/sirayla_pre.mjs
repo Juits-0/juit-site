@@ -1,0 +1,12 @@
+import { createRequire } from 'node:module';
+const require = createRequire('C:/Claude/UnityProject1/node_modules/');
+const { chromium } = require('playwright');
+const b = await chromium.launch({ channel: 'chrome' });
+const p = await (await b.newContext({ viewport: { width: 1280, height: 720 } })).newPage();
+const logs=[]; p.on('pageerror', e => logs.push(e.message)); p.on('console', m => { if (m.type()==='error' && !/ERR_NAME/.test(m.text())) logs.push(m.text()); });
+await p.goto('http://localhost:5181/lab.html#/deney/sirayla'); await p.waitForTimeout(700);
+await p.screenshot({ path: 'C:/Claude/juit-site/_dev/shots/sirayla_desktop.png' });
+console.log(await p.evaluate(() => { const e = window.__exp; return JSON.stringify({ pre: e.pre.toFixed(2), hp: e.hp, en: e.en.map(n => [Math.round(n.x - e.mx), Math.round(n.y - e.my)]) }); }));
+await p.waitForTimeout(6000);
+console.log(await p.evaluate(() => { const e = window.__exp; return JSON.stringify({ t: e.t.toFixed(1), hp: e.hp }); }), logs.join('|') || 'KONSOL TEMIZ');
+await b.close();
