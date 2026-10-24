@@ -37,6 +37,6 @@ export function mount(main, app, route) {
     </div>
   </section>`;
 
-  main.addEventListener('click', e => { const b = e.target.closest('[data-open-video]'); if (!b) return; const v = videos.find(x => x.n === +b.dataset.openVideo); if (v) openVideo(v, app) });
+  main.firstElementChild.addEventListener('click', e => { const b = e.target.closest('[data-open-video]'); if (!b) return; const v = videos.find(x => x.n === +b.dataset.openVideo); if (v) openVideo(v, app) });
   return {};
 }

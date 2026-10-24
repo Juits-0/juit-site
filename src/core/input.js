@@ -55,6 +55,8 @@ export class Input {
     window.addEventListener('keydown', e => {
       if (!this.enabled) return;
       const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'SELECT' || t.tagName === 'TEXTAREA')) return;
+      // odaktaki düğme/bağlantıda Boşluk ve Enter arayüze aittir (klavyeyle düğme kullanımı bozulmasın); yön tuşları oyuna gider
+      if (t && (e.code === 'Space' || e.code === 'Enter' || e.code === 'NumpadEnter') && t.closest && t.closest('button, a[href], [role="button"], [role="switch"], [role="tab"], summary')) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (BLOCK.has(e.code)) e.preventDefault();
       if (e.repeat) return;

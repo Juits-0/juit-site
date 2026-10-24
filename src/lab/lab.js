@@ -65,6 +65,7 @@ export class Lab {
             <div><h1>MOBU'NUN OYUN LABORATUVARI</h1><p class="lab-sub">Videoda gördün. Şimdi kendin dene.</p></div>
           </div>
           <div class="lab-tools">
+            <a class="btn lab-home" href="${base}" title="JUIT ana sitesine dön"><span aria-hidden="true">←</span> JUIT<span class="sr-only"> ana sitesine dön</span></a>
             <button class="lab-count" type="button" data-a="stamps" title="Hatıralarını gör"></button>
             <button class="btn btn-icon" type="button" data-a="sound" aria-label="Ses"></button>
             <button class="btn btn-reduce" type="button" data-a="reduce" aria-pressed="false"><span class="rd-ico">◐</span><span class="rd-t">Hareketi azalt</span></button>

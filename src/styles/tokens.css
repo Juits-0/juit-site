@@ -1,7 +1,7 @@
 /* ---------- JUIT tasarım değişkenleri ---------- */
 @font-face {
   font-family: 'InterDisplay';
-  src: url('/fonts/InterDisplay-Black.otf') format('opentype');
+  src: url('/fonts/InterDisplay-Black.woff2') format('woff2'), url('/fonts/InterDisplay-Black.otf') format('opentype');   /* woff2: 624 KB → 182 KB */
   font-weight: 900;
   font-style: normal;
   font-display: swap;

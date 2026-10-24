@@ -3,8 +3,8 @@
 // Styles + idle animations live in desk.css.
 
 export function deskSVG() {
-  return `<svg class="desk-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="desk-title" stroke-linejoin="round" stroke-linecap="round">
-<title id="desk-title">İçerik üreticisinin gece masası</title>
+  return `<svg class="desk-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="desk-svg-title" stroke-linejoin="round" stroke-linecap="round">
+<title id="desk-svg-title">İçerik üreticisinin gece masası</title>
 <defs>
 <linearGradient id="desk-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050505"/><stop offset="1" stop-color="#0A0A0A"/></linearGradient>
 <radialGradient id="desk-wall-glow"><stop offset="0" stop-color="#8B3DFF" stop-opacity=".34"/><stop offset=".5" stop-color="#8B3DFF" stop-opacity=".12"/><stop offset="1" stop-color="#8B3DFF" stop-opacity="0"/></radialGradient>

@@ -43,6 +43,7 @@ export class Runner {
     if (this.input) { this.input.dispose(); this.input = null; }
     if (this.touch) { this.touch.destroy(); this.touch = null; }
     if (this._ac) { this._ac.abort(); this._ac = null; }
+    if (this._onClick) { this.root.removeEventListener('click', this._onClick); this._onClick = null; }   // #exp kalıcı: eski dinleyici birikmesin
     clearTimeout(this._toastT); clearTimeout(this._goalT);
     this.root.innerHTML = '';
     if (window.__exp) window.__exp = null;
@@ -210,7 +211,7 @@ export class Runner {
       view: this.view, s: this.settingsState, tech: this.tech, reduced: this.reduced, input: this.input, audio, store,
       cfg: this.cfg, container: this.container || null, _rt: this,
     });
-    window.__exp = this.exp;      // geliştirme/test kolaylığı
+    if (import.meta.env.DEV) window.__exp = this.exp;      // yalnız geliştirmede: test kolaylığı
     try { this.exp.init(); } catch (e) { console.error('Deney init hatası', e); }
     this._sync();
     this.ro = new ResizeObserver(() => this._resize());

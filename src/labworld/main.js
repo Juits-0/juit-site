@@ -29,7 +29,7 @@ export function start() {
     setFlash(a) { flashEl.style.transition = 'none'; flashEl.style.background = '#8B3DFF'; flashEl.style.opacity = a; },
   };
 
-  function ensureLab() { if (!lab) { lab = new Lab(labEl, app); window.__lab = lab; } return lab; }
+  function ensureLab() { if (!lab) { lab = new Lab(labEl, app); if (import.meta.env.DEV) window.__lab = lab; } return lab; }
   function ensureRunner() { if (!runner) runner = new Runner(expEl, app); return runner; }
 
   function parse() {
@@ -92,7 +92,7 @@ export function start() {
   window.addEventListener('hashchange', route);
   window.addEventListener('pointerdown', () => audio.unlock(), { once: true, capture: true });
   route();
-  window.__app = app;
+  if (import.meta.env.DEV) window.__app = app;   // yalnız geliştirmede
   return app;
 }
 

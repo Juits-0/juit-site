@@ -7,8 +7,17 @@
   <meta name="color-scheme" content="dark">
   <title>JUIT — Mobu & oyun laboratuvarı</title>
   <meta name="description" content="Oyunların arkasındaki mekanikler, Mobu ile anlatılan videolar ve oynanabilir deneyler.">
+  <link rel="canonical" href="https://juitexe.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="JUIT">
+  <meta property="og:locale" content="tr_TR">
+  <meta property="og:url" content="https://juitexe.com/">
+  <meta property="og:title" content="JUIT — Mobu &amp; oyun laboratuvarı">
+  <meta property="og:description" content="Oyunların arkasındaki mekanikler, Mobu ile anlatılan videolar ve oynanabilir deneyler.">
+  <meta property="og:image" content="https://juitexe.com/logo/jt_logo.png">
+  <meta name="twitter:card" content="summary">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="preload" href="/fonts/InterDisplay-Black.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="/fonts/InterDisplay-Black.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -18,15 +27,15 @@
   <a class="skip-link" href="#main">İçeriğe atla</a>
 
   <!-- Açılış: siyah perde + logo. JS başarısız olursa CSS fallback ile 2.5 sn sonra kaybolur. -->
-  <div id="intro" class="intro" aria-hidden="true">
-    <canvas id="intro-canvas" class="intro__canvas"></canvas>
+  <div id="intro" class="intro">
+    <canvas id="intro-canvas" class="intro__canvas" aria-hidden="true"></canvas>
     <button id="intro-skip" class="intro__skip" type="button">Atla <kbd>Esc</kbd></button>
   </div>
 
   <!-- Kalıcı üst çubuk -->
   <header id="topbar" class="topbar" hidden>
     <a class="topbar__brand" href="#/" aria-label="JUIT ana sayfa"><img src="/logo/jt_logo.png" alt="" width="34" height="34"><span>JUIT</span></a>
-    <nav class="topbar__nav" aria-label="Site gezinmesi">
+    <nav id="topbar-nav" class="topbar__nav" aria-label="Site gezinmesi">
       <a href="#/mobu" data-route="mobu">Mobu & Videolar</a>
       <a href="#/arcade" data-route="arcade">Oyun Salonu</a>
       <a href="#/lab" data-route="lab">Deneyler</a>
@@ -34,7 +43,7 @@
     </nav>
     <div class="topbar__tools">
       <button id="sfx-toggle" class="icon-btn" type="button" aria-pressed="false" title="Ses efektleri"><span class="icon-btn__ico" aria-hidden="true">🔇</span><span class="sr-only">Ses efektleri</span></button>
-      <button id="menu-toggle" class="icon-btn icon-btn--menu" type="button" aria-expanded="false" aria-controls="topbar-nav-mobile" title="Menü"><span aria-hidden="true">☰</span><span class="sr-only">Menü</span></button>
+      <button id="menu-toggle" class="icon-btn icon-btn--menu" type="button" aria-expanded="false" aria-controls="topbar-nav" title="Menü"><span aria-hidden="true">☰</span><span class="sr-only">Menü</span></button>
     </div>
   </header>
 

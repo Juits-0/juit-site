@@ -7,7 +7,7 @@ import { toast } from './ui/toast.js';
 import { socials, contact } from './content.config.js';
 
 const app = { bus, sfx, store, mobu: null, reducedMotion: prefersReducedMotion(), socials, contact };
-window.__juit = app; // hata ayıklama için
+if (import.meta.env.DEV) window.__juit = app; // yalnız geliştirmede: hata ayıklama
 
 // ---- üst çubuk ----
 function initTopbar() {
@@ -17,6 +17,7 @@ function initTopbar() {
   sfxBtn.addEventListener('click', () => { sfx.setEnabled(!sfx.enabled); paint(); if (sfx.enabled) sfx.play('switch'); toast(sfx.enabled ? 'Ses efektleri açık' : 'Ses efektleri kapalı', 1400) });
   paint();
   menuBtn.addEventListener('click', () => { const open = !bar.classList.contains('is-menu-open'); bar.classList.toggle('is-menu-open', open); menuBtn.setAttribute('aria-expanded', String(open)) });
+  $('.skip-link')?.addEventListener('click', e => { e.preventDefault(); const m = $('#main'); m.focus({ preventScroll: true }); m.scrollIntoView() });   // href="#main" hash router'ı bozmasın
   $$('.topbar__nav a').forEach(a => a.addEventListener('click', () => { bar.classList.remove('is-menu-open'); menuBtn.setAttribute('aria-expanded', 'false'); sfx.play('click') }));
   bus.on('route', ({ path }) => { bar.classList.toggle('is-hub', path === ''); bar.classList.remove('is-menu-open'); menuBtn.setAttribute('aria-expanded', 'false') });
   document.addEventListener('click', e => { if (!bar.contains(e.target)) { bar.classList.remove('is-menu-open'); menuBtn.setAttribute('aria-expanded', 'false') } });

@@ -9,10 +9,11 @@ function cabinetHTML(g, i) {
 }
 
 export function mount(main, app) {
-  const latest = videos[videos.length - 1];
+  const latest = videos.filter(v => v.youtubeId).at(-1) || videos.at(-1);   // TV: son YAYIMLANAN video
   const socialLinks = Object.values(socials).filter(s => s.url).map(s => `<a class="chip" href="${s.url}" target="_blank" rel="noopener">${escapeHTML(s.label)} ↗</a>`).join('');
   main.innerHTML = `
   <section class="hub" id="hub">
+    <h1 class="sr-only">JUIT: oyunların arkasındaki mekanikleri Mobu ile anlatan videolar ve oynanabilir oyun deneyleri</h1>
     <div class="hub__worlds" id="hub-worlds">
       <a class="world world--mobu" href="#/mobu" id="world-mobu" aria-label="Mobu ve videolar dünyasına gir">
         <div class="world__layer world__layer--back" data-depth=".35"><i class="world__spot"></i><i class="world__floor"></i></div>

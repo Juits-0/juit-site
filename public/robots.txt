@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://juitexe.com/sitemap.xml

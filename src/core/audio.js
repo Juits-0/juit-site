@@ -3,7 +3,10 @@
 import { store } from './store.js';
 
 let ctx = null, master = null, noiseBuf = null;
-let enabled = store.get('sfx', true) !== false;
+// Ana siteyle ortak tercih: 'juit.sfx' ('1'/'0', varsayılan kapalı). Eski laboratuvar tercihi yalnız ortak anahtar yoksa okunur.
+const SHARED = 'juit.sfx';
+const readShared = () => { try { return localStorage.getItem(SHARED); } catch (_) { return null; } };
+let enabled = readShared() != null ? readShared() === '1' : store.get('sfx', false) === true;
 const last = {};
 
 function ensure() {
@@ -53,7 +56,7 @@ const SFX = {
 
 export const audio = {
   get enabled() { return enabled; },
-  set enabled(v) { enabled = !!v; store.set('sfx', enabled); },
+  set enabled(v) { enabled = !!v; store.set('sfx', enabled); try { localStorage.setItem(SHARED, enabled ? '1' : '0'); } catch (_) {} },
   // kullanıcı etkileşiminde bağlamı aç
   unlock() { const c = ensure(); if (c && c.state === 'suspended') c.resume(); },
   play(name) {

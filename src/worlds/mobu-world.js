@@ -67,7 +67,7 @@ export function mount(main, app) {
   grid.addEventListener('pointerenter', onEnter, true); grid.addEventListener('pointerleave', onLeave, true);
   grid.addEventListener('focusin', onEnter); grid.addEventListener('focusout', onLeave);
   grid.addEventListener('click', e => { const c = e.target.closest('.vcard'); if (!c) return; const v = videos.find(x => x.n === +c.dataset.n); if (v) openVideo(v, app) });
-  main.addEventListener('click', e => { const b = e.target.closest('[data-open-video]'); if (!b) return; const v = videos.find(x => x.n === +b.dataset.openVideo); if (v) openVideo(v, app) });
+  main.firstElementChild.addEventListener('click', e => { const b = e.target.closest('[data-open-video]'); if (!b) return; const v = videos.find(x => x.n === +b.dataset.openVideo); if (v) openVideo(v, app) });
 
   // deney: görünür olunca kurulur
   const host = $('#lab-coyote-host', main);

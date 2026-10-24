@@ -43,7 +43,7 @@ export function mount(main, app) {
     app.sfx?.play('pop', { gain: .5 });
     bus.emit('about:select', { id, el: fromObj || $(`.desk-obj[data-object="${id}"]`, main) });
   }
-  main.addEventListener('click', e => { const g = e.target.closest('.desk-obj'); if (g) { select(g.dataset.object, g); return } const t = e.target.closest('.desk-tab'); if (t) select(t.dataset.object) });
-  main.addEventListener('keydown', e => { const g = e.target.closest?.('.desk-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); select(g.dataset.object, g) } });
+  main.firstElementChild.addEventListener('click', e => { const g = e.target.closest('.desk-obj'); if (g) { select(g.dataset.object, g); return } const t = e.target.closest('.desk-tab'); if (t) select(t.dataset.object) });
+  main.firstElementChild.addEventListener('keydown', e => { const g = e.target.closest?.('.desk-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); select(g.dataset.object, g) } });
   return { destroy() { } };
 }
