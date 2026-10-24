@@ -106,7 +106,12 @@ ok(await page.evaluate(() => !!document.getElementById(document.getElementById('
 
 // 7) laboratuvarda ana siteye dönüş bağlantısı
 await page.goto(`${BASE}/lab.html#/`); await wait(1200);
-ok(await page.locator('a.lab-home').count() > 0, 'laboratuvarda ana siteye dönüş bağlantısı yok');
+// gerçek tıklama: Playwright öğenin tıklamayı alıp almadığını da denetler (pointer-events: none ise zaman aşımı)
+for (const sel of ['a.lab-logo', 'a.lab-home']) {
+  await page.goto(`${BASE}/lab.html#/`); await wait(1200);
+  try { await page.locator(sel).click({ timeout: 3000 }); await page.waitForURL(u => !String(u).includes('lab.html'), { timeout: 3000 }); }
+  catch { fails.push(`laboratuvarda ${sel} tıklanınca ana siteye dönülmüyor`); }
+}
 
 await browser.close(); server.close();
 if (fails.length) { console.error(`✗ ${fails.length} sorun:\n - ` + fails.join('\n - ')); process.exit(1); }

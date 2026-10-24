@@ -30,7 +30,7 @@ button { font-family: inherit; }
 .lab-cv { position: absolute; inset: 0; display: block; touch-action: none; }
 .lab-ui { position: absolute; inset: 0; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; padding: calc(12px + var(--sa-t)) 14px 0; flex-wrap: wrap; align-content: flex-start; }
 .lab-ui > * { pointer-events: none; }
-.lab-ui button, .lab-ui .lab-count { pointer-events: auto; }
+.lab-ui button, .lab-ui a, .lab-ui .lab-count { pointer-events: auto; }   /* a: JT logosu ve ← JUIT ana site bağlantıları */
 .lab-brand { display: flex; align-items: center; gap: 10px; }
 .lab-brand img { width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(139,61,255,.6)); }
 .lab-brand h1 { margin: 0; font: 900 15px/1.1 var(--font); letter-spacing: .07em; color: var(--white); }
@@ -212,3 +212,6 @@ button { font-family: inherit; }
 /* ekran okuyucuya özel metin + ana siteye dönüş bağlantısı */
 .sr-only { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .lab-home { text-decoration: none; white-space: nowrap; }
+.lab-logo { display: inline-flex; border-radius: 10px; transition: transform .15s; }
+.lab-logo:hover { transform: scale(1.06); }
+.lab-logo:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }

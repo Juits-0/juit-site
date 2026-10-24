@@ -61,7 +61,7 @@ export class Lab {
         <canvas class="lab-cv"></canvas>
         <div class="lab-ui">
           <div class="lab-brand">
-            <img src="${base}logo/jt_logo.png" alt="JT" width="38" height="38" onerror="this.style.display='none'">
+            <a class="lab-logo" href="${base}" title="JUIT ana sitesine dön" aria-label="JUIT ana sitesine dön"><img src="${base}logo/jt_logo.png" alt="" width="38" height="38" onerror="this.style.display='none'"></a>
             <div><h1>MOBU'NUN OYUN LABORATUVARI</h1><p class="lab-sub">Videoda gördün. Şimdi kendin dene.</p></div>
           </div>
           <div class="lab-tools">
