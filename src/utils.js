@@ -57,3 +57,5 @@ export function whenVisible(el, onShow, onHide, margin = '200px') {
 
 export const wait = ms => new Promise(r => setTimeout(r, ms));
 export const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
+// Laboratuvarın tamamlama damgaları (lab.html aynı kökte 'juit.lab.stamps' anahtarına yazar): { id: zaman }
+export const labStamps = () => { try { return JSON.parse(localStorage.getItem('juit.lab.stamps') || '{}') || {} } catch { return {} } };

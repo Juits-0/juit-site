@@ -67,7 +67,8 @@ export const videos = [
   { n: 12, slug: 'ayna',                  title: 'Oyunlardaki aynalar neden bazen çalışmıyor?',                youtubeId: 'LfwRGc50Fh4', face: 'sad',    topic: 'Yansıma' },
   { n: 13, slug: 'gorunmez-duvar',        title: 'Oyunlarda görünmez duvarlar neden var?',                     youtubeId: 'DA2mNoOmNvM', face: 'x',      topic: 'Görünmez sınır' },
   { n: 14, slug: 'gizli-yukleme',         title: 'Oyunlar yükleme ekranlarını nasıl gizliyor?',                youtubeId: 'FdkdoHB89j8', face: 'closed', topic: 'Level streaming' },
-  { n: 15, slug: 'culling',               title: 'Oyunlarda neden kameranın görmediği şeyler kayboluyor?',     youtubeId: '',            face: 'O',      topic: 'Culling' },
+  { n: 15, slug: 'culling',               title: 'Oyunlarda neden kameranın görmediği şeyler kayboluyor?',     youtubeId: 'fk5OAq6NLwI', face: 'O',      topic: 'Culling' },
+  { n: 16, slug: 'wallhack-aimbot',       title: 'Oyunlarda wallhack ve aimbot nasıl çalışıyor?',              youtubeId: 'wTXIvBz18qk', face: 'sus',    topic: 'Anti-cheat' },
 ].map(v => ({
   ...v,
   poster: asset(`/videos/posters/${String(v.n).padStart(2, '0')}.jpg`),

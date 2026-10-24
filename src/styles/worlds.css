@@ -132,3 +132,14 @@ body.is-locked .mobu-hit { display: none; }
 .mobu-hit:focus-visible { outline: 2px dashed var(--glow); }
 .mobu-hit[hidden] { display: none; }
 body:not(.is-ready) .mobu-layer, body:not(.is-ready) .mobu-hit { display: none; }
+
+/* ---------- laboratuvar ilerlemesi (Deneyler sayfası) ---------- */
+.lab-progress { display: grid; gap: 6px; max-width: 420px; margin-top: 18px; font-size: 13px; color: var(--text-2); }
+.lab-progress__bar { height: 8px; border-radius: 99px; background: rgba(255,255,255,.06); border: 1px solid var(--line); overflow: hidden; }
+.lab-progress__bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--purple), var(--glow)); border-radius: inherit; }
+.lab-card.is-done { border-color: color-mix(in srgb, var(--purple) 55%, transparent); }
+.lab-card.is-done .eyebrow { color: var(--glow); }
+.lab-card.is-next { border-color: var(--glow); box-shadow: 0 0 0 1px rgba(182,124,255,.25), 0 18px 40px -24px rgba(139,61,255,.7); }
+.lab-card.is-next .eyebrow { color: var(--glow); }
+/* video duvarı: en yeni yayımlanan videonun rozeti */
+.vcard__badge--new { background: var(--purple); color: #fff; border-color: transparent; }

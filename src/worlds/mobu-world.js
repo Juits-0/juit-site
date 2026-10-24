@@ -1,5 +1,5 @@
 // MOBU & VİDEOLAR — Mobu'nun odası: video duvarı, site içi oynatıcı ve deney masası (coyote time).
-import { $, $$, bus, escapeHTML, whenVisible } from '../utils.js';
+import { $, $$, bus, escapeHTML, whenVisible, labStamps } from '../utils.js';
 import { videos, labs, socials } from '../content.config.js';
 import { openModal } from '../ui/modal.js';
 import { mountLab } from './lab-mount.js';
@@ -7,7 +7,11 @@ import { mountLab } from './lab-mount.js';
 const pad = n => String(n).padStart(2, '0');
 
 export function videoCard(v) {
-  const badge = v.placeholder ? `<span class="chip chip--example vcard__badge">yakında</span>` : '';
+  // rozet önceliği: yakında > YENİ (son yayımlanan) > deneyi tamamlandı
+  const newest = videos.filter(x => x.youtubeId).at(-1)?.n;
+  const badge = v.placeholder ? `<span class="chip chip--example vcard__badge">yakında</span>`
+    : v.n === newest ? `<span class="chip vcard__badge vcard__badge--new">YENİ</span>`
+    : v.lab && labStamps()[v.lab] ? `<span class="chip vcard__badge" title="Bu videonun deneyini tamamladın">✓ deney</span>` : '';
   return `<button class="vcard" type="button" data-n="${v.n}" aria-label="${escapeHTML(v.title)} — izle">
     <span class="vcard__screen"><img class="vcard__poster" src="${v.poster}" alt="" loading="lazy" decoding="async"><video class="vcard__loop" muted loop playsinline preload="none" src="${v.loop}"></video><i class="vcard__scan"></i>${badge}<span class="vcard__play" aria-hidden="true">▶</span></span>
     <span class="vcard__meta"><span class="vcard__n mono">#${pad(v.n)}</span><span class="vcard__topic chip">${escapeHTML(v.topic)}</span></span>

@@ -390,8 +390,8 @@ export class Lab {
     txt(g, 'HATIRALAR', x, y - 40, 10, '#8C8C8C', 'center', 900);
     const st = store.stamps();
     for (let i = 0; i < N; i++) {
-      const cx = x - 48 + (i % 5) * 24, cy = y - 18 + Math.floor(i / 5) * 26, on = !!st[EXPERIMENTS[i].id];
-      g.beginPath(); g.arc(cx, cy, 9, 0, 7);
+      const cx = x - 50 + (i % 6) * 20, cy = y - 18 + Math.floor(i / 6) * 26, on = !!st[EXPERIMENTS[i].id];
+      g.beginPath(); g.arc(cx, cy, 8, 0, 7);
       if (on) { g.fillStyle = PURPLE; g.fill(); g.strokeStyle = LAV; g.lineWidth = 1.5; g.stroke(); } else { g.strokeStyle = '#3a3050'; g.lineWidth = 1.5; g.setLineDash([2, 2.5]); g.stroke(); g.setLineDash([]); }
     }
   }

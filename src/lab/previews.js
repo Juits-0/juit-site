@@ -154,4 +154,16 @@ function culling(g, t, w, h) {
   dot(g, cx, cy, 6, W);
 }
 
-export const PREVIEWS = { sirayla, gorus, coyote, yonlendirme, chunk, odul, boss, zaman, hitbox, iframes, lod, ayna, duvar, yukleme, culling };
+// 16 · wallhack & aimbot: duvar arkasında kırmızı siluet, nişangâh ara ara hedefe ani kilitlenir
+function hile(g, t, w, h) {
+  base(g, w, h); const cx = w / 2, cy = h / 2, s = Math.min(w, h);
+  g.fillStyle = '#2B2B2B'; g.fillRect(cx - s * .06, cy - s * .3, s * .12, s * .6);
+  const hx = cx + s * .32 + Math.sin(t * 1.4) * s * .12;
+  g.strokeStyle = R; g.lineWidth = 2; g.fillStyle = 'rgba(239,74,92,.25)';
+  g.beginPath(); g.roundRect(hx - s * .07, cy - s * .16, s * .14, s * .3, s * .06); g.fill(); g.stroke();
+  const lock = (t % 2.2) > 1.6, ax = lock ? hx : cx - s * .45 + Math.sin(t * .9) * s * .1, ay = lock ? cy - s * .06 : cy;
+  g.strokeStyle = lock ? R : LV; g.beginPath(); g.arc(ax, ay, s * .07, 0, 7); g.moveTo(ax - s * .11, ay); g.lineTo(ax + s * .11, ay); g.moveTo(ax, ay - s * .11); g.lineTo(ax, ay + s * .11); g.stroke();
+  dot(g, cx - s * .55, cy + s * .2, 7, W);
+}
+
+export const PREVIEWS = { sirayla, gorus, coyote, yonlendirme, chunk, odul, boss, zaman, hitbox, iframes, lod, ayna, duvar, yukleme, culling, hile };
